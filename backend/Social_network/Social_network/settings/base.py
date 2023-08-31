@@ -60,17 +60,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Social_network.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'social_network',
-        'USER': 'postgres',
-        'PASSWORD': 'ksflkOkas23fl9saflKdl349sLfsk1',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
