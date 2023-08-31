@@ -1,12 +1,16 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
+from dotenv import load_dotenv
 
 
 def main():
-    """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Social_network.settings')
+    load_dotenv()
+    env = os.environ.get('ENV')
+    if env == 'production':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Social_network.settings.production')
+    if env == 'development':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Social_network.settings.development')
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
