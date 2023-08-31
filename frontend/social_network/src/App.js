@@ -1,7 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
+import axios from "axios";
+
+
+axios.get('api/v1/login/')
+    .then(data => { console.log(data) })
+
 
 function App() {
+
   return (
     <div className="App">
       <header className="App-header">
