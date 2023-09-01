@@ -1,22 +1,23 @@
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView
 from django.core.mail import EmailMessage
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import  get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework import authentication
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 from login.utils import account_activation_token
 
 
 class ProfileList(ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
 
@@ -27,7 +28,7 @@ class CreateUserView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         super().create(request, *args, **kwargs)
 
-        mail_subject = 'Ссылка для активацтт аккаунта'
+        mail_subject = 'Ссылка для активации аккаунта'
         user = self.request.user
         message = render_to_string('email_auth.html', {
             'user': user,
@@ -51,6 +52,27 @@ class CreateUserView(CreateAPIView):
         })
 
 
+# надо получить с фронта емайл
+@api_view(('POST',))
+def send_token_to_email(request):
+    mail_subject = 'Ссылка для активации аккаунта'
+    user = request.user
+    message = render_to_string('email_auth.html', {
+        'user': user,
+
+        # нужно сделать domain меняющимся, сервер или локальная машина
+        # в темплайте надо будет еще изменить http на https
+        'domain': '127.0.0.1:8000',
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+    })
+    to_email = request.data['email']
+    email = EmailMessage(
+        mail_subject, message, to=[to_email]
+    )
+    email.send()
+
+
 @api_view(('GET',))
 def activate(request, uidb64, token):
     try:
@@ -72,27 +94,23 @@ def activate(request, uidb64, token):
 class AuthUserView(CreateAPIView):
     serializer_class = AuthUserSerializer
 
-    def create(self, request, *args, **kwargs):
-
+    def post(self, request, *args, **kwargs):
         user = get_object_or_404(User, email=request.data['email'])
-        # user = User.objects.get(email=request.data['email'])
-        # нужно отдельный класс, который ссылку с емайла примет, проверит
-        # и активирует профиль
-        # а потом можно сразу автоматом его авторизовать через:
-        # но нужно отдельный класс(урл) для авторизации все равно написать
-        if user.check_password(request.data['password']):
-            user.is_active = True
-            user.save()
-        user = authenticate(username=user.username, password=request.data['password'])
 
+        user = authenticate(username=user.username, password=request.data['password'])
+        print(user)
         if user is not None:
             login(request, user)
 
         # print(user.is_active)
         return Response({
             'status': 200,
-            'message': 'Чего то нашел',
+            'message': 'Авторизация прошла успешно',
         })
 
-# class ActivateUserView():
-#     pass
+
+class LogoutUserView(APIView):
+
+    def get(self, request):
+        logout(request)
+        return Response('Выход из аккаунта выполнен успешно')
