@@ -9,7 +9,7 @@ ALLOWED_HOSTS = []
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('ENGINE'),
-        'NAME': os.environ.get('NAME'),
+        'NAME': 'social_network',
         'USER': 'postgres',
         'PASSWORD': os.environ.get('PASSWORD'),
         'HOST': os.environ.get('HOST'),

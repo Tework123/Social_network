@@ -75,11 +75,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'daniliesaec@gmail.com'
+EMAIL_HOST_PASSWORD = 'uwuqhgnrecyjnztl'
+EMAIL_PORT = 587
+
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'login.authentication.CustomAuthentication',
+
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
@@ -116,4 +126,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# AUTH_USER_MODEL = 'nameOfTheApp.CustomUser'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

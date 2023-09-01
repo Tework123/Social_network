@@ -8,9 +8,10 @@ urlpatterns = [
     # авторизация
     path('api/v1/auth/', include('rest_framework.urls')),
 
-    # регистрация
-    # path('api/v1/register/', include('register.urls')),
+    # # регистрация
+    # path('api/v1//', include('register.urls')),
 
     path("__debug__/", include("debug_toolbar.urls")),
 
 ]
+
