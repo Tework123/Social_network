@@ -9,7 +9,7 @@ import { Navbar, Container, Nav } from "react-bootstrap";
 import Register from '../Register/Register'
 import Register2 from '../Register2/Register2'
 import Login from "../Login/Login";
-import Login2 from "../Login2/Login2.jsx";
+import Login2 from "../Login2/Login2";
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 
 
