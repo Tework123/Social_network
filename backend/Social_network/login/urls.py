@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 
-from login.views import ProfileList, CreateUserView, AuthUserView, activate, LogoutUserView, send_token_to_email
+from login.views import ProfileList, CreateUserView, AuthUserView, activate, LogoutUserView, send_token_to_email, \
+    ProfilePhotoTest
 
 urlpatterns = [
 
@@ -21,6 +22,8 @@ urlpatterns = [
     # повторная отправка ссылки
     path('send_token_to_email/',
          send_token_to_email),
+
+    path('photos/', ProfilePhotoTest.as_view())
 
     # нужна еще ссылка с токеном для сброса пароля
 

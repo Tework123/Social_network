@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
-from django.shortcuts import  get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -10,7 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer
+from login.models import ProfilePhoto
+from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer, ProfilePhotoSerializer
 from django.contrib.auth import authenticate, login, logout
 
 from login.utils import account_activation_token
@@ -114,3 +115,8 @@ class LogoutUserView(APIView):
     def get(self, request):
         logout(request)
         return Response('Выход из аккаунта выполнен успешно')
+
+
+class ProfilePhotoTest(ListAPIView, CreateAPIView):
+    queryset = ProfilePhoto.objects.all()
+    serializer_class = ProfilePhotoSerializer
