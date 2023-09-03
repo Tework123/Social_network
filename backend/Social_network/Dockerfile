@@ -1,4 +1,20 @@
-FROM ubuntu:latest
-LABEL authors="t1"
+FROM python:3.11
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+
+#ENV PYTHONDONTWRITEBYTECODE 1
+#ENV PYTHONUNBUFFERED 1
+
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+
+#COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
+
+COPY . .
+
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "-b", ":8000", "Social_network.wsgi:application"]
+
+
+#ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

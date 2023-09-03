@@ -2,12 +2,17 @@ import os
 import sys
 from dotenv import load_dotenv
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 def main():
+    # load_dotenv(os.path.join(basedir, '.env'))
     load_dotenv()
     env = os.environ.get('ENV')
+
     if env == 'production':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Social_network.settings.production')
+
     if env == 'development':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Social_network.settings.development')
 
