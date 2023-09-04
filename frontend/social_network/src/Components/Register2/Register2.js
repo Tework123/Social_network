@@ -5,7 +5,7 @@ import axios from '../../Api/axios';
 import './register2.css';
 import '../Login1/login1.scss'
 
-const REGISTER_URL = 'api/v1/login/register';
+const REGISTER_URL = 'api/v1/login/register/';
 
 
 
@@ -61,7 +61,8 @@ const Register = () => {
         }
         try {
             const response = await axios.post(REGISTER_URL,
-                { user, pwd },
+                { email:user, password:pwd },
+
                
             );
             console.log(response?.data);

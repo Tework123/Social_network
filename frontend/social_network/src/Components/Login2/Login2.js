@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useContext } from 'react';
 import AuthContext from "../../Context/AuthProvider";
 import './register2.css';
 import axios from '../../Api/axios';
-const LOGIN_URL = '/auth';
+const LOGIN_URL = 'api/v1/login/auth/';
 
 const Login2 = () => {
     const { setAuth } = useContext(AuthContext);
@@ -27,11 +27,8 @@ const Login2 = () => {
 
         try {
             const response = await axios.post(LOGIN_URL,
-                JSON.stringify({ user, pwd }),
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                }
+                { email:user, password:pwd },
+                
             );
             console.log(JSON.stringify(response?.data));
             //console.log(JSON.stringify(response));
