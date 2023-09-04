@@ -14,7 +14,7 @@ html {
 
 body {
     min-height: 100vh;
-    background-color: dodgerblue;
+    background-color: dodgerblue; /* rgb(237 238 240) vk color */
 }
 
 .App {

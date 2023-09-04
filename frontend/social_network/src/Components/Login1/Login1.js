@@ -1,9 +1,11 @@
 import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import axios from "axios";
 
 import '../Login/login.scss'
 
 export default function Login() {
+
 
     return (
         <Formik
@@ -24,14 +26,21 @@ export default function Login() {
                 return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
-                setTimeout(() => {
-                    alert(JSON.stringify(values, null, 2));
-                    setSubmitting(false);
-                }, 400);
+                 axios.post('https://jsonplaceholder.typicode.com/posts/', {
+                    "userId": 102,
+                    "id": 102,
+                    "title": "title2",
+                    "body": "bodyyy2"
+                }).then(function (response) {
+                    console.log(response.data)
+                }).catch(function (error) {
+                    console.log(error)
+                })
+                setSubmitting(false)
             }}>
             <div className="parent">
                 <div className="block">
-                    <h1>Вход</h1>
+                    <h3>Вход</h3>
                 <Form className="form">
                     <label htmlFor="email" className="label_email">Email</label>
                     <Field
