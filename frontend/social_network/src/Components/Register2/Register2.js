@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from '../../Api/axios';
 import './register2.css';
 
-const REGISTER_URL = '/register';
+const REGISTER_URL = 'api/v1/login/register';
 
 
 
@@ -48,7 +48,7 @@ const Register = () => {
     useEffect(() => {
         setErrMsg('');
     }, [user, pwd, matchPwd])
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         // if button enabled with JS hack
@@ -60,11 +60,8 @@ const Register = () => {
         }
         try {
             const response = await axios.post(REGISTER_URL,
-                JSON.stringify({ user, pwd }),
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                }
+                { user, pwd },
+               
             );
             console.log(response?.data);
             console.log(response?.accessToken);
