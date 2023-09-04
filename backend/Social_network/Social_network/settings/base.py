@@ -22,7 +22,8 @@ INSTALLED_APPS = [
     # cors
     'corsheaders',
     # apps
-    'login.apps.LoginConfig'
+    'login.apps.LoginConfig',
+    'tasks.apps.TasksConfig'
 ]
 
 MIDDLEWARE = [
@@ -75,21 +76,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'daniliesaec@gmail.com'
 EMAIL_HOST_PASSWORD = 'uwuqhgnrecyjnztl'
 EMAIL_PORT = 587
 
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    # 'DEFAULT_RENDERER_CLASSES': (
+    #     'rest_framework.renderers.JSONRenderer',
+    # ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'login.authentication.CustomAuthentication',
-
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
@@ -105,6 +105,11 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+# cookies
+SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 180
 
 INTERNAL_IPS = [
     # ...
@@ -122,6 +127,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, 'static'),
+# )
+
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -120,13 +120,14 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env.dev
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+.env
 
 # Spyder project settings
 .spyderproject
@@ -233,7 +234,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
+.env.dev
 .env.development.local
 .env.test.local
 .env.production.local
