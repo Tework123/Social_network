@@ -2,8 +2,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -15,16 +13,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # rest
     'rest_framework',
+
     # debug panel
     "debug_toolbar",
+
+    # library for phone_field
+    "phonenumber_field",
     # cors
     'corsheaders',
+
     # apps
     'login.apps.LoginConfig',
     'tasks.apps.TasksConfig'
 ]
+AUTH_USER_MODEL = 'login.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,10 +82,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'daniliesaec@gmail.com'
-EMAIL_HOST_PASSWORD = 'uwuqhgnrecyjnztl'
-EMAIL_PORT = 587
+EMAIL_HOST = os.environ.get("MAIL_SERVER")
+EMAIL_HOST_USER = os.environ.get("MAIL_USERNAME")
+EMAIL_HOST_PASSWORD = os.environ.get("MAIL_PASSWORD")
+EMAIL_PORT = os.environ.get("MAIL_PORT")
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -127,14 +132,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-# STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'static'),
-# )
-
-# STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

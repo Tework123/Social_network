@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -10,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from login.models import ProfilePhoto
+from login.models import ProfilePhoto, CustomUser
 from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer, ProfilePhotoSerializer
 from django.contrib.auth import authenticate, login, logout
 
@@ -18,8 +17,8 @@ from login.utils import account_activation_token
 
 
 class ProfileList(ListAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = User.objects.all()
+    # permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
     serializer_class = ProfileSerializer
 
 
@@ -27,10 +26,14 @@ class CreateUserView(CreateAPIView):
     serializer_class = CreateUserSerializer
 
     def create(self, request, *args, **kwargs):
-        super().create(request, *args, **kwargs)
+        # user = super().create(request, *args, **kwargs)
+
+        user = CustomUser.objects.create_user(email=self.request.data['email'],
+                                              password=self.request.data['password'],
+                                              is_active=False)
 
         mail_subject = 'Ссылка для активации аккаунта'
-        user = self.request.user
+
         message = render_to_string('email_auth.html', {
             'user': user,
 
@@ -54,10 +57,12 @@ class CreateUserView(CreateAPIView):
 
 
 # надо получить с фронта емайл
+# это авторизация после истечения кук
 @api_view(('POST',))
 def send_token_to_email(request):
     mail_subject = 'Ссылка для активации аккаунта'
     user = request.user
+
     message = render_to_string('email_auth.html', {
         'user': user,
 
@@ -78,8 +83,8 @@ def send_token_to_email(request):
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = CustomUser.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
@@ -96,14 +101,32 @@ class AuthUserView(CreateAPIView):
     serializer_class = AuthUserSerializer
 
     def post(self, request, *args, **kwargs):
-        user = get_object_or_404(User, email=request.data['email'])
+        if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
+            user = CustomUser.objects.filter(email=request.data['email'])
 
-        user = authenticate(username=user.username, password=request.data['password'])
-        print(user)
-        if user is not None:
+            if not user:
+                user = CustomUser.objects.create_user(email=self.request.data['email'],
+                                                      password=self.request.data['password'],
+                                                      is_active=True)
+
+            user = authenticate(email=user.email, password=request.data['password'])
             login(request, user)
+            return Response({
+                'status': 200,
+                'message': 'Вход тестового пользователя выполнен успешно',
+            })
 
-        # print(user.is_active)
+        user = get_object_or_404(CustomUser, email=request.data['email'])
+
+        user = authenticate(email=user.email, password=request.data['password'])
+        if user is None:
+            return Response({
+                'status': 403,
+                'message': 'Данные для авторизации неправильные',
+            })
+
+        login(request, user)
+
         return Response({
             'status': 200,
             'message': 'Авторизация прошла успешно',

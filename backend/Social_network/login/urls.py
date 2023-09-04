@@ -16,12 +16,14 @@ urlpatterns = [
     path('logout/', LogoutUserView.as_view()),
 
     # получение ссылки с токеном для подтверждения аккаунта
-    re_path(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-            activate),
+    # re_path(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+    #         activate, name='activate'),
+
+    path('activate/<uidb64>/<token>/', activate, name='activate'),
 
     # повторная отправка ссылки
     path('send_token_to_email/',
-         send_token_to_email),
+         send_token_to_email, name='send_token_to_email'),
 
     path('photos/', ProfilePhotoTest.as_view())
 
