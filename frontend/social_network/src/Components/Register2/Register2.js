@@ -3,6 +3,7 @@ import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from '../../Api/axios';
 import './register2.css';
+import '../Login1/login1.scss'
 
 const REGISTER_URL = 'api/v1/login/register';
 

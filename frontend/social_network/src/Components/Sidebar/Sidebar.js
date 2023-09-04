@@ -1,17 +1,13 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Switch 
-} from "react-router-dom";
-import { Navbar, Container, Nav } from "react-bootstrap";
+import {BrowserRouter as Router, Route, Link, Switch} from "react-router-dom";
 import Register from '../Register/Register'
 import Register2 from '../Register2/Register2'
 import Login from "../Login/Login";
 import Login2 from "../Login2/Login2";
-import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import Login1 from '../Login1/Login1'
 
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 export default function Sidebar() {
   return (
@@ -30,6 +26,9 @@ export default function Sidebar() {
           </li>
           <li>
             <Link to="/login">Login</Link>
+          </li>
+           <li>
+            <Link to="/login1">Login1</Link>
           </li>
           <li>
             <Link to="/login2">Login2</Link>
@@ -50,6 +49,9 @@ export default function Sidebar() {
         </Route>
         <Route path="/login">
           <Login />
+        </Route>
+        <Route path="/login1">
+          <Login1 />
         </Route>
         <Route path="/login2">
           <Login2 />

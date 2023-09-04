@@ -1,0 +1,14 @@
+* {
+  box-sizing: border-box;
+}
+
+.form .error {
+  color: #e53e3e;
+  margin-top: 8px;
+}
+.form button {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+/*# sourceMappingURL=login.css.map */
