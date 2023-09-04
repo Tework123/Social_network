@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "babel src -d lib",
+    "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject"
   },
