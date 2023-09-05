@@ -14,6 +14,8 @@ const Login2 = () => {
     const [errMsg, setErrMsg] = useState('');
     const [success, setSuccess] = useState(false);
 
+    const [message, setMessage] = useState('')
+
     useEffect(() => {
         userRef.current.focus();
     }, [])
@@ -27,17 +29,22 @@ const Login2 = () => {
 
         try {
             const response = await axios.post(LOGIN_URL,
-                { email:user, password:pwd}
-                
+
+                { email:user, password:pwd }
             );
             console.log(JSON.stringify(response?.data));
             //console.log(JSON.stringify(response));
-            const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
-            setAuth({ user, pwd, roles, accessToken });
+            // const accessToken = response?.data?.accessToken;
+            // const roles = response?.data?.roles;
+            //setAuth({ user, pwd, roles, accessToken });
+            console.log(response?.data)
+            console.log(response?.data.status)
+            if (response?.data.status === 200) {
+                setSuccess(true);
+            }
+            setMessage(response.data.message)
             setUser('');
             setPwd('');
-            setSuccess(true);
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
@@ -56,7 +63,7 @@ const Login2 = () => {
         <>
             {success ? (
                 <section>
-                    <h1>You are logged in!</h1>
+                    <h1>{message}</h1>
                     <br />
                     <p>
                         <a href="#">Go to Home</a>
@@ -72,7 +79,7 @@ const Login2 = () => {
                             type="text"
                             id="username"
                             ref={userRef}
-                            autoComplete="off"
+                            autoComplete="on"
                             onChange={(e) => setUser(e.target.value)}
                             value={user}
                             required
