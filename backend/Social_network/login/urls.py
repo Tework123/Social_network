@@ -28,8 +28,7 @@ urlpatterns = [
     #      ResetPasswordCreatePassword.as_view()),
 
     # повторная отправка для подтверждения аккаунта
-    # path('activate_account/',
-    #      send_token_to_email, name='send_token_to_email'),
+    # path('reset_password/', send_token_to_email, name='send_token_to_email'),
 
     path('activate/<uidb64>/<token>/', activate, name='activate'),
 

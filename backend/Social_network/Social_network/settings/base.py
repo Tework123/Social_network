@@ -103,18 +103,15 @@ REST_FRAMEWORK = {
     # 'PAGE_SIZE': 10,
 }
 
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:3000'
-# ]
-
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
 ]
 
-# CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+# CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken', "Set-Cookie"]
+
 
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -136,10 +133,23 @@ CORS_ALLOW_METHODS = [
 #     "x-requested-with",
 # ]
 
-# cookies
-SESSION_COOKIE_HTTPONLY = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# # cookies
+# CSRF_COOKIE_HTTPONLY = True
+# SESSION_COOKIE_HTTPONLY = True
+#
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 180
+
+
+##
+# CSRF_COOKIE_SAMESITE = 'Lax'
+# SESSION_COOKIE_SAMESITE = 'Lax'
+# CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
+# SESSION_COOKIE_HTTPONLY = True
+
+# PROD ONLY
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 
 INTERNAL_IPS = [
     # ...

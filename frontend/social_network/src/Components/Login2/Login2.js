@@ -27,7 +27,7 @@ const Login2 = () => {
 
         try {
             const response = await axios.post(LOGIN_URL,
-                { email:user, password:pwd },
+                { email:user, password:pwd}
                 
             );
             console.log(JSON.stringify(response?.data));

@@ -1,9 +1,10 @@
-import axios from "axios";
 import Sidebar from './Components/Sidebar/Sidebar'
+import axios from "axios";
 
-axios.get('api/v1/login/')
-     .then(data => { console.log(data) })
 
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+axios.defaults.withCredentials = true;
 
 function App() {
 

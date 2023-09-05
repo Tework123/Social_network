@@ -30,7 +30,7 @@ class ResetPasswordSendEmailSerializer(serializers.ModelSerializer):
 
 class ResetPasswordCreatePasswordSerializer(serializers.ModelSerializer):
     # confirm_password = serializers.CreateOnlyDefault
-    # ?????/
+
     class Meta:
         model = CustomUser
         fields = ['password']

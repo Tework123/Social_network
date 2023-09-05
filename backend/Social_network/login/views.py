@@ -8,6 +8,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -66,10 +67,9 @@ class AuthUserView(CreateAPIView):
 
             user = authenticate(email=user.email, password=request.data['password'])
             login(request, user)
-            return Response({
-                'status': 200,
-                'message': 'Вход тестового пользователя выполнен успешно',
-            })
+            request.session['one'] = 'created through "read" view'
+
+            return Response(status=HTTP_200_OK, data='123')
 
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
@@ -104,7 +104,6 @@ class ResetPasswordSendEmail(CreateAPIView):
         # отправка на email
         send_to_email(user, mail_subject='Ссылка для сброса пароля',
                       template_name='email_reset_password.html')
-
         return Response({
             'status': 200,
             'message': 'Для сброса пароля пройдите по ссылке,'
