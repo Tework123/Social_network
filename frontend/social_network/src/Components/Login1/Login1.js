@@ -1,11 +1,12 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import axios from "axios";
 
 import '../Login/login.scss'
 
 export default function Login() {
-
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
 
     return (
         <Formik
@@ -26,13 +27,11 @@ export default function Login() {
                 return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
-                 axios.post('https://jsonplaceholder.typicode.com/posts/', {
-                    "userId": 102,
-                    "id": 102,
-                    "title": "title2",
-                    "body": "bodyyy2"
+                 axios.post('api/v1/login/auth/', {
+                     email: email,
+                     password: password
                 }).then(function (response) {
-                    console.log(response.data)
+                    console.log(response.data.status)
                 }).catch(function (error) {
                     console.log(error)
                 })
