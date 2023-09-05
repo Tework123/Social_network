@@ -11,13 +11,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
-
-    # def create(self, validated_data):
-    #     user = CustomUser.objects.create_user(email=validated_data['email'],
-    #                                           password=validated_data['password'],
-    #                                           is_active=False)
-    #     return user
-
     class Meta:
         model = CustomUser
         fields = ['email', 'password']
@@ -27,6 +20,20 @@ class AuthUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['email', 'password']
+
+
+class ResetPasswordSendEmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email']
+
+
+class ResetPasswordCreatePasswordSerializer(serializers.ModelSerializer):
+    # confirm_password = serializers.CreateOnlyDefault
+
+    class Meta:
+        model = CustomUser
+        fields = ['password', 'confirm_password']
 
 
 class ProfilePhotoSerializer(serializers.ModelSerializer):
