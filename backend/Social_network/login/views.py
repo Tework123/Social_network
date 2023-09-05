@@ -57,14 +57,14 @@ class AuthUserView(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
-            user = CustomUser.objects.filter(email=request.data['email'])
-
-            if not user:
+            try:
+                user = CustomUser.objects.get(email=request.data['email'])
+            except:
                 user = CustomUser.objects.create_user(email=self.request.data['email'],
                                                       password=self.request.data['password'],
                                                       is_active=True)
 
-            user = authenticate(email=user[0].email, password=request.data['password'])
+            user = authenticate(email=user.email, password=request.data['password'])
             login(request, user)
             return Response({
                 'status': 200,
@@ -139,13 +139,13 @@ class ResetPasswordCreatePassword(APIView):
         if user is None and not account_activation_token.check_token(user, token):
             return Response()
         user = get_object_or_404(CustomUser, email=user.email)
-        print(self.request.data['confirm_password'])
+        # print(self.request.data['confirm_password'])
 
-        if self.request.data['password'] != self.request.data['confirm_password']:
-            return Response({
-                'status': 400,
-                'message': 'Введенные пароли не совпадают',
-            })
+        # if self.request.data['password'] != self.request.data['confirm_password']:
+        #     return Response({
+        #         'status': 400,
+        #         'message': 'Введенные пароли не совпадают',
+        #     })
         user.set_password(self.request.data['password'])
         user.save()
 
@@ -153,25 +153,6 @@ class ResetPasswordCreatePassword(APIView):
             'status': 200,
             'message': 'Ваш пароль изменен успешно'
         })
-
-
-# @api_view(('GET',))
-# def reset_password(request, uidb64, token):
-#     try:
-#         uid = force_str(urlsafe_base64_decode(uidb64))
-#         user = CustomUser.objects.get(pk=uid)
-#     except(TypeError, ValueError, OverflowError):
-#         user = None
-#     if user is not None and account_activation_token.check_token(user, token):
-#         return Response({
-#             'status': 200,
-#             'message': 'Введите новый пароль',
-#         })
-#     else:
-#         return Response({
-#             'status': 200,
-#             'message': 'Возникла проблема',
-#         })
 
 
 @api_view(('GET',))
