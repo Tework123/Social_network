@@ -34,9 +34,3 @@ class ResetPasswordCreatePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['password']
-
-
-class ProfilePhotoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProfilePhoto
-        fields = '__all__'

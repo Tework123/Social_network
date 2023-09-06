@@ -109,6 +109,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 # CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken', "Set-Cookie"]
 
@@ -121,17 +122,6 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
-# CORS_ALLOW_HEADERS = [
-#     "accept",
-#     "accept-encoding",
-#     "authorization",
-#     "content-type",
-#     "dnt",
-#     "origin",
-#     "user-agent",
-#     "x-csrftoken",
-#     "x-requested-with",
-# ]
 
 # # cookies
 # CSRF_COOKIE_HTTPONLY = True
@@ -139,7 +129,6 @@ CORS_ALLOW_METHODS = [
 #
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 180
-
 
 ##
 # CSRF_COOKIE_SAMESITE = 'Lax'

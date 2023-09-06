@@ -4,6 +4,11 @@ import './register2.css';
 import axios from '../../Api/axios';
 const LOGIN_URL = 'api/v1/login/auth/';
 
+
+const client = axios.create({
+    baseURL: "http://127.0.0.1:8000"
+  });
+
 const Login2 = () => {
     const { setAuth } = useContext(AuthContext);
     const userRef = useRef();
@@ -28,7 +33,7 @@ const Login2 = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(LOGIN_URL,
+            const response = await client.post(LOGIN_URL,
 
                 { email:user, password:pwd }
             );
