@@ -158,7 +158,6 @@ class ResetPasswordCreatePassword(APIView):
         #     })
         user.set_password(self.request.data['password'])
         user.save()
-        print(123)
 
         return Response(status=status.HTTP_200_OK, data='Пароль изменен успешно')
 
