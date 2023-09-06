@@ -165,6 +165,7 @@ class ResetPasswordCreatePassword(APIView):
 
 
 class LogoutUserView(APIView):
+    print(123)
 
     def get(self, request):
         logout(request)
