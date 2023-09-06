@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,8 +21,12 @@ INSTALLED_APPS = [
 
     # library for phone_field
     "phonenumber_field",
+
     # cors
     'corsheaders',
+
+    # swagger
+    'drf_yasg',
 
     # apps
     'login.apps.LoginConfig',

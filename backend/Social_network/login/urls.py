@@ -23,7 +23,8 @@ urlpatterns = [
          ResetPasswordSendEmail.as_view()),
 
     # получение ссылки для сброса пароля
-    path('reset_password/<uidb64>/<token>/', ResetPasswordCreatePassword.as_view(), name='reset_password'),
+    path('reset_password/<uidb64>/<token>/', ResetPasswordCreatePassword.as_view(),
+         name='reset_password'),
 
     # выход из аккаунта
     path('logout/', LogoutUserView.as_view()),
