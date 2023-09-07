@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from login.email import send_to_email
-from login.models import CustomUser
+from account.models import CustomUser
 from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer, \
     ResetPasswordSendEmailSerializer, ResetPasswordCreatePasswordSerializer
 from django.contrib.auth import authenticate, login, logout

@@ -30,9 +30,10 @@ INSTALLED_APPS = [
 
     # apps
     'login.apps.LoginConfig',
+    'account.apps.AccountConfig',
     'tasks.apps.TasksConfig'
 ]
-AUTH_USER_MODEL = 'login.CustomUser'
+AUTH_USER_MODEL = 'account.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
