@@ -4,7 +4,6 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView, CreateAPIView
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -177,26 +176,3 @@ class DeleteUserView(APIView):
         user.delete()
         return Response(status=status.HTTP_200_OK, data='Аккаунт удален успешно')
 
-
-# надо получить все данные профиля, а также чтобы можно было любое поле поменять
-# только какие поля выводить?
-# либо в отдельный апп вынести, но модель придется импортировать, либо второй view сделать
-# надо вывести всю главную страницу(как на вк)
-# картинка(главная), город, место обучения, другая личная информация(при нажатии на кнопку фронта)
-# галерея с остальными фотками, значит тупо все сразу выкидываем(либо 3), чтобы больше посмореть-
-# надо тыкнуть на №фото№(альбомы называется), кнопка загрузить фото,
-# вытащить друзей неколько
-#
-# музыка
-# статьи
-# посты
-#
-# загрузить фото
-# сделать запись
-# кринж обложка(еще одна фоточка)
-# остальные записи на странице(мои, или кто прикрепил их к моей странице)
-# подписки на группы
-# Отдельная кнопка для редактирования профиль, там уже другой урл
-
-class GetProfile(ListAPIView):
-    pass
