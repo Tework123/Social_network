@@ -1,5 +1,4 @@
 import Sidebar from './Components/Sidebar/Sidebar'
-import axios from "axios";
 
 
 
