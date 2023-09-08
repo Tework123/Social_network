@@ -96,10 +96,13 @@ class AuthUserView(CreateAPIView):
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = CustomUser.objects.get(pk=uid)
+        user = get_object_or_404(CustomUser, pk=uid)
+
+
     except (TypeError, ValueError, OverflowError):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
+
         user.is_active = True
         user.save()
         login(request, user)
@@ -157,7 +160,8 @@ class ResetPasswordCreatePassword(APIView):
         #         'status': 400,
         #         'message': 'Введенные пароли не совпадают',
         #     })
-        user.set_password(self.request.data['password'])
+
+        user.set_password(serializer.data['password'])
         user.save()
 
         return Response(status=status.HTTP_200_OK, data='Пароль изменен успешно')
