@@ -43,12 +43,20 @@ class UserCreationForm(forms.ModelForm):
 
 
 class UserChangeForm(forms.ModelForm):
-    """A form for updating users. Includes all the fields on
-    the user, but replaces the password field with admin's
-    disabled password hash display field.
-    """
-
     password = ReadOnlyPasswordHashField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        password = self.fields.get("password")
+        if password:
+            password.help_text = password.help_text.format(
+                f"../../{self.instance.pk}/password/"
+            )
+        user_permissions = self.fields.get("user_permissions")
+        if user_permissions:
+            user_permissions.queryset = user_permissions.queryset.select_related(
+                "content_type"
+            )
 
     class Meta:
         model = CustomUser

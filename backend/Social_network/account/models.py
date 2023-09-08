@@ -8,7 +8,7 @@ from account.managers import UserManager
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'password']
+    REQUIRED_FIELDS = ['password']
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
@@ -50,7 +50,7 @@ class Work(models.Model):
     status = models.CharField(max_length=30, blank=True)
     date_start = models.DateTimeField(null=True, blank=True)
     date_stop = models.DateTimeField(null=True, blank=True)
-    custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    custom_user = models.ForeignKey(CustomUser, related_name='work', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.name}'
