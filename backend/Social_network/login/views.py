@@ -126,7 +126,6 @@ class ResetPasswordSendEmail(CreateAPIView):
 
 
 class ResetPasswordCreatePassword(APIView):
-    serializer_class = ResetPasswordCreatePasswordSerializer
 
     def get(self, request, uidb64, token):
 
@@ -139,6 +138,8 @@ class ResetPasswordCreatePassword(APIView):
             return Response(status=status.HTTP_200_OK, data='Введите новый пароль')
 
     def post(self, request, uidb64, token):
+        serializer = ResetPasswordCreatePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
