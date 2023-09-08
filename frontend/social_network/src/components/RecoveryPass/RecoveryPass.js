@@ -36,9 +36,7 @@ const RecoveryPass = () => {
                 <div className="block">
                     <h3>Введите новый пароль</h3>
                     <Form className="form">
-                        <label htmlFor="password" className="label_pass">Пароль</label>
                     <Field
-                        id="password"
                         name="password"
                         type="password"
                         className="password"

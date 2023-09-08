@@ -18,7 +18,6 @@ const RecoveryPassEmail = () => {
                 return errors
             }}
             onSubmit={(values) => {
-                console.log(values)
                 axios.post(`http://127.0.0.1:8000/api/v1/login/reset_password/`,{
                     email: values.email
                 })
@@ -31,9 +30,7 @@ const RecoveryPassEmail = () => {
                 <div className="block">
                     <h3>Введите почту для восстановления пароля</h3>
                     <Form className="form">
-                        <label htmlFor="email" className="label_email">Email</label>
                         <Field
-                            id="email"
                             name="email"
                             type="email"
                             className="email"
