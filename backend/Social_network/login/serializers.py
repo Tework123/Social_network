@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from login.models import  CustomUser
+from login.models import CustomUser
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -27,9 +27,5 @@ class ResetPasswordSendEmailSerializer(serializers.ModelSerializer):
         fields = ['email']
 
 
-class ResetPasswordCreatePasswordSerializer(serializers.ModelSerializer):
-    # confirm_password = serializers.CreateOnlyDefault
-
-    class Meta:
-        model = CustomUser
-        fields = ['password']
+class ResetPasswordCreatePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField()
