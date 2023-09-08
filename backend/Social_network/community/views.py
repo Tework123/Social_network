@@ -1,3 +1,10 @@
 from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from community.models import Community
+from community.serializers import CommunityListSerializer
+
+
+class GetCommunities(generics.ListAPIView):
+    serializer_class = CommunityListSerializer
+    queryset = Community.objects.all()

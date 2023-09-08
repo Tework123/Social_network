@@ -31,6 +31,10 @@ INSTALLED_APPS = [
     # apps
     'login.apps.LoginConfig',
     'account.apps.AccountConfig',
+    'post.apps.PostConfig',
+    'album.apps.AlbumConfig',
+    'community.apps.CommunityConfig',
+    'chat.apps.ChatConfig',
     'tasks.apps.TasksConfig'
 ]
 AUTH_USER_MODEL = 'account.CustomUser'
@@ -164,5 +168,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# AUTH_USER_MODEL = 'nameOfTheApp.CustomUser'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

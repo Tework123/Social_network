@@ -1,3 +1,10 @@
 from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from chat.models import Chat
+from chat.serializers import ChatListSerializer
+
+
+class GetChats(generics.ListAPIView):
+    serializer_class = ChatListSerializer
+    queryset = Chat.objects.all()

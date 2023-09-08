@@ -35,10 +35,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class Education(models.Model):
     city = models.CharField(max_length=30, blank=True)
     name = models.CharField(max_length=50)
-    level = models.CharField(max_length=30)
+    level = models.CharField(max_length=30, blank=True)
     status = models.CharField(max_length=30, blank=True)
     date_graduation = models.DateTimeField(null=True, blank=True)
-    custom_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+    custom_user = models.ForeignKey(CustomUser, related_name='education', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Work(models.Model):
@@ -47,4 +50,7 @@ class Work(models.Model):
     status = models.CharField(max_length=30, blank=True)
     date_start = models.DateTimeField(null=True, blank=True)
     date_stop = models.DateTimeField(null=True, blank=True)
-    custom_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+    custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.name}'
