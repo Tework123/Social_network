@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,10 +24,36 @@ class ProfileList(ListAPIView):
     serializer_class = ProfileSerializer
 
 
+response_schema_dict = {
+    "200": openapi.Response(
+        description="custom 200 description",
+        examples={
+            "application/json": {
+                "200_key1": "200_value_1",
+                "200_key2": "200_value_2",
+            }
+        }
+    ),
+    "205": openapi.Response(
+        description="custom 205 description",
+        examples={
+            "application/json": {
+                "205_key1": "205_value_1",
+                "205_key2": "205_value_2",
+            }
+        }
+    ),
+}
+
+
 class CreateUserView(CreateAPIView):
     serializer_class = CreateUserSerializer
 
-    def create(self, request, *args, **kwargs):
+    @swagger_auto_schema(responses=response_schema_dict)
+    # @swagger_auto_schema(operation_description="partial_update description override", responses={404: 'slug not found'})
+    # @swagger_auto_schema(method='post', operation_description="HELLO EVERYONE")
+    @action(detail=False, methods=['post'])
+    def post(self, request, *args, **kwargs):
         try:
             CustomUser.objects.get(email=self.request.data['email'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')

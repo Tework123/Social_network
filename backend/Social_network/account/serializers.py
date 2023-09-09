@@ -22,7 +22,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'pk', 'email', 'first_name', 'last_name',
+        fields = ['id', 'email', 'first_name', 'last_name',
                   'phone', 'city', 'about_me', 'avatar',
                   'date_of_birth', 'date_joined', 'date_last_visit',
                   'date_last_password_reset', 'lifestyle', 'interest', 'education', 'work']
@@ -31,16 +31,12 @@ class AccountSerializer(serializers.ModelSerializer):
 class AccountEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'pk', 'first_name', 'last_name',
+        fields = ['id', 'first_name', 'last_name',
                   'phone', 'city', 'about_me', 'avatar',
                   'date_of_birth', 'lifestyle', 'interest']
 
 
-
-
-
-
-
-
-
-
+class AccountEditEducationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Education
+        fields = '__all__'
