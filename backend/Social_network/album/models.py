@@ -7,7 +7,7 @@ from post.models import Post
 
 class Album(models.Model):
     name = models.CharField(max_length=100)
-    custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     community = models.ForeignKey(Community, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):

@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from account.models import CustomUser, Education, Work
 
@@ -29,6 +30,15 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class AccountEditSerializer(serializers.ModelSerializer):
+
+    def validate(self, attrs):
+        attrs._mutable = True
+
+        if not attrs['date_of_birth']:
+            attrs['date_of_birth'] = None
+
+        return attrs
+
     class Meta:
         model = CustomUser
         fields = ['id', 'first_name', 'last_name',
@@ -37,6 +47,17 @@ class AccountEditSerializer(serializers.ModelSerializer):
 
 
 class AccountEditEducationSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        attrs._mutable = True
+
+        if attrs['name'] == '':
+            raise ValidationError('Название учебного заведения должно быть заполнено')
+
+        if not attrs['date_graduation']:
+            attrs['date_graduation'] = None
+
+        return attrs
+
     class Meta:
         model = Education
-        fields = '__all__'
+        fields = ['id', 'name', 'city', 'level', 'status', 'date_graduation']

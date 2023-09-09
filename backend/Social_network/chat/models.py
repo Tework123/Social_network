@@ -6,7 +6,7 @@ from account.models import CustomUser
 class Chat(models.Model):
     name = models.CharField(max_length=50)
     open_or_close = models.BooleanField(default=False)
-    custom_user = models.ManyToManyField(CustomUser)
+    user = models.ManyToManyField(CustomUser)
 
     def __str__(self):
         return f'{self.name}'
