@@ -1,26 +1,8 @@
-import rest_framework
-from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_decode
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, permissions, generics
-from rest_framework.decorators import api_view, action
-from rest_framework.generics import ListAPIView, CreateAPIView
-
+from rest_framework import status, generics
 from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from account.serializers import AccountSerializer, AccountEditSerializer, AccountEditEducationSerializer
-from login.email import send_to_email
-from account.models import CustomUser, Education
-from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer, \
-    ResetPasswordSendEmailSerializer, ResetPasswordCreatePasswordSerializer
-from django.contrib.auth import authenticate, login, logout
-
-from login.utils import account_activation_token
+from account.serializers import AccountSerializer, AccountEditSerializer, AccountEditEducationSerializer, \
+    AccountEditWorkSerializer
+from account.models import CustomUser, Education, Work
 
 
 class AccountView(generics.RetrieveAPIView):
@@ -100,4 +82,50 @@ class AccountEditEducationView(generics.RetrieveUpdateDestroyAPIView):
         Education.objects.filter(pk=self.kwargs['pk']).delete()
         return Response(status=status.HTTP_200_OK, data='Образование удалено успешно')
 
-# тоже самое с работой сделать, прямо один в один
+
+class AccountEditWorkListView(generics.ListCreateAPIView):
+    """Показывает все места работы, создает новое"""
+    serializer_class = AccountEditWorkSerializer
+
+    def get_queryset(self):
+        return Work.objects.filter(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        serializer = AccountEditWorkSerializer(request.data)
+        serializer.validate(request.data)
+
+        Work.objects.create(city=request.data['city'],
+                            name=request.data['name'],
+                            status=request.data['status'],
+                            date_start=request.data['date_start'],
+                            date_stop=request.data['date_stop'],
+                            user=self.request.user)
+
+        return Response(status=status.HTTP_201_CREATED, data='Место работы успешно добавлено')
+
+
+class AccountEditWorkView(generics.RetrieveUpdateDestroyAPIView):
+    """Изменение конкретного образования"""
+    serializer_class = AccountEditWorkSerializer
+
+    def get_queryset(self):
+        return Work.objects.filter(pk=self.kwargs['pk'])
+
+    def put(self, request, *args, **kwargs):
+        serializer = AccountEditWorkSerializer(request.data)
+        serializer.validate(request.data)
+
+        education = Work.objects.filter(pk=self.kwargs['pk'])
+
+        education.update(city=request.data['city'],
+                         name=request.data['name'],
+                         status=request.data['status'],
+                         date_start=request.data['date_start'],
+                         date_stop=request.data['date_stop'],
+                         user=self.request.user)
+
+        return Response(status=status.HTTP_200_OK, data='Информация успешно изменена')
+
+    def delete(self, request, *args, **kwargs):
+        Work.objects.filter(pk=self.kwargs['pk']).delete()
+        return Response(status=status.HTTP_200_OK, data='Образование удалено успешно')

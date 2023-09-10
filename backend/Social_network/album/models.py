@@ -10,6 +10,15 @@ class Album(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     community = models.ForeignKey(Community, on_delete=models.CASCADE, blank=True, null=True)
 
+    # @property
+    # def photo(self):
+    #     print(123)
+    #     print(123)
+    #     print(123)
+    #     print(123)
+    #
+    #     return '123'
+
     def __str__(self):
         return f'{self.name}'
 
@@ -17,9 +26,10 @@ class Album(models.Model):
 class Photo(models.Model):
     image = models.ImageField(upload_to='photos/')
     text = models.TextField(max_length=150, blank=True)
-    album = models.ForeignKey(Album, on_delete=models.CASCADE, blank=True, null=True)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True)
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, blank=True, null=True)
+    # date_create
+    album = models.ForeignKey(Album, related_name='photo', on_delete=models.CASCADE, blank=True, null=True)
+    post = models.ForeignKey(Post, related_name='photo', on_delete=models.CASCADE, blank=True, null=True)
+    message = models.ForeignKey(Message, related_name='photo', on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f'{self.image}'

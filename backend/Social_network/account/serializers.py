@@ -61,3 +61,27 @@ class AccountEditEducationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Education
         fields = ['id', 'name', 'city', 'level', 'status', 'date_graduation']
+
+
+class AccountEditWorkSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        attrs._mutable = True
+
+        if attrs['name'] == '':
+            raise ValidationError('Название места работы должно быть заполнено')
+
+        if not attrs['date_start']:
+            attrs['date_start'] = None
+
+        if not attrs['date_stop']:
+            attrs['date_stop'] = None
+
+        if attrs['date_start'] and attrs['date_stop']:
+            if attrs['date_start'] > attrs['date_stop']:
+                raise ValidationError('Дата начала работы должна быть позже даты конца')
+
+        return attrs
+
+    class Meta:
+        model = Work
+        fields = ['id', 'name', 'city', 'status', 'date_start', 'date_stop']
