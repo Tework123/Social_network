@@ -1,13 +1,5 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
-
-from login.models import ProfilePhoto, CustomUser
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = '__all__'
+from account.models import CustomUser
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -28,9 +20,5 @@ class ResetPasswordSendEmailSerializer(serializers.ModelSerializer):
         fields = ['email']
 
 
-class ResetPasswordCreatePasswordSerializer(serializers.ModelSerializer):
-    # confirm_password = serializers.CreateOnlyDefault
-
-    class Meta:
-        model = CustomUser
-        fields = ['password']
+class ResetPasswordCreatePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField()

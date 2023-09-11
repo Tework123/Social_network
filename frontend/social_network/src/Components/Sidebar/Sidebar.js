@@ -8,6 +8,7 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Login1 from '../Login1/Login1'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
+import Verification from "../Verification/Verification";
 
 export default function Sidebar() {
   return (
@@ -58,6 +59,9 @@ export default function Sidebar() {
         </Route>
         <Route path="/users">
           <Users />
+        </Route>
+        <Route exact path="/api/v1/login/activate/:uidb64/:token">
+          <Verification />
         </Route>
         <Route path="/">
           <Home />

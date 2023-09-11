@@ -1,40 +1,56 @@
-from django.core.mail import EmailMessage
 from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.generics import ListAPIView, CreateAPIView
-from rest_framework.mixins import CreateModelMixin, ListModelMixin
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
 
 from login.email import send_to_email
-from login.models import ProfilePhoto, CustomUser
-from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer, \
+from account.models import CustomUser
+from login.serializers import CreateUserSerializer, AuthUserSerializer, \
     ResetPasswordSendEmailSerializer, ResetPasswordCreatePasswordSerializer
 from django.contrib.auth import authenticate, login, logout
 
 from login.utils import account_activation_token
 
-
-class ProfileList(ListAPIView):
-    # permission_classes = [IsAuthenticated]
-    queryset = CustomUser.objects.all()
-    serializer_class = ProfileSerializer
+response_schema_dict = {
+    "200": openapi.Response(
+        description="custom 200 description",
+        examples={
+            "application/json": {
+                "200_key1": "200_value_1",
+                "200_key2": "200_value_2",
+            }
+        }
+    ),
+    "205": openapi.Response(
+        description="custom 205 description",
+        examples={
+            "application/json": {
+                "205_key1": "205_value_1",
+                "205_key2": "205_value_2",
+            }
+        }
+    ),
+}
 
 
 class CreateUserView(CreateAPIView):
     serializer_class = CreateUserSerializer
 
-    def create(self, request, *args, **kwargs):
+    @swagger_auto_schema(responses=response_schema_dict)
+    # @swagger_auto_schema(operation_description="partial_update description override", responses={404: 'slug not found'})
+    # @swagger_auto_schema(method='post', operation_description="HELLO EVERYONE")
+    @action(detail=False, methods=['post'])
+    def post(self, request, *args, **kwargs):
         try:
             CustomUser.objects.get(email=self.request.data['email'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
-        except:
+        except Exception:
 
             user = CustomUser.objects.create_user(email=self.request.data['email'],
                                                   password=self.request.data['password'],
@@ -73,7 +89,7 @@ class AuthUserView(CreateAPIView):
         if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
             try:
                 user = CustomUser.objects.get(email=request.data['email'])
-            except:
+            except Exception:
                 user = CustomUser.objects.create_user(email=self.request.data['email'],
                                                       password=self.request.data['password'],
                                                       is_active=True)
@@ -81,13 +97,15 @@ class AuthUserView(CreateAPIView):
             user = authenticate(email=user.email, password=request.data['password'])
             login(request, user)
 
-            return Response(status=status.HTTP_200_OK, data='Авторизация тестового юзера прошла успешно')
+            return Response(status=status.HTTP_200_OK,
+                            data='Авторизация тестового юзера прошла успешно')
 
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
         user = authenticate(email=user.email, password=request.data['password'])
         if user is None:
-            return Response(status=status.HTTP_403_FORBIDDEN, data='Данные для авторизации неправильные')
+            return Response(status=status.HTTP_403_FORBIDDEN,
+                            data='Данные для авторизации неправильные')
 
         login(request, user)
 
@@ -98,10 +116,13 @@ class AuthUserView(CreateAPIView):
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = CustomUser.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError):
+        user = get_object_or_404(CustomUser, pk=uid)
+
+
+    except (TypeError, ValueError, OverflowError):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
+
         user.is_active = True
         user.save()
         login(request, user)
@@ -128,24 +149,25 @@ class ResetPasswordSendEmail(CreateAPIView):
 
 
 class ResetPasswordCreatePassword(APIView):
-    serializer_class = ResetPasswordCreatePasswordSerializer
 
     def get(self, request, uidb64, token):
 
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = CustomUser.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError):
+        except (TypeError, ValueError, OverflowError):
             user = None
         if user is not None and account_activation_token.check_token(user, token):
             return Response(status=status.HTTP_200_OK, data='Введите новый пароль')
 
     def post(self, request, uidb64, token):
+        serializer = ResetPasswordCreatePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = CustomUser.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError):
+        except (TypeError, ValueError, OverflowError):
             user = None
 
         if user is None and not account_activation_token.check_token(user, token):
@@ -158,14 +180,14 @@ class ResetPasswordCreatePassword(APIView):
         #         'status': 400,
         #         'message': 'Введенные пароли не совпадают',
         #     })
-        user.set_password(self.request.data['password'])
+
+        user.set_password(serializer.data['password'])
         user.save()
 
         return Response(status=status.HTTP_200_OK, data='Пароль изменен успешно')
 
 
 class LogoutUserView(APIView):
-    print(123)
 
     def get(self, request):
         logout(request)

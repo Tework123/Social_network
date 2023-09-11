@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,14 +21,23 @@ INSTALLED_APPS = [
 
     # library for phone_field
     "phonenumber_field",
+
     # cors
     'corsheaders',
 
+    # swagger
+    'drf_yasg',
+
     # apps
     'login.apps.LoginConfig',
+    'account.apps.AccountConfig',
+    'post.apps.PostConfig',
+    'album.apps.AlbumConfig',
+    'community.apps.CommunityConfig',
+    'chat.apps.ChatConfig',
     'tasks.apps.TasksConfig'
 ]
-AUTH_USER_MODEL = 'login.CustomUser'
+AUTH_USER_MODEL = 'account.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -107,6 +115,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
 ]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000',
+                        'http://127.0.0.1:3000', ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
@@ -122,6 +132,23 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+
+# SWAGGER_SETTINGS = {
+#     "DEFAULT_MODEL_RENDERING": "example"
+# }
+
+# SWAGGER_SETTINGS = {
+#     'DEFAULT_FIELD_INSPECTORS': [
+#         'drf_yasg.inspectors.CamelCaseJSONFilter',
+#         'drf_yasg.inspectors.InlineSerializerInspector',
+#         'drf_yasg.inspectors.RelatedFieldInspector',
+#         'drf_yasg.inspectors.ChoiceFieldInspector',
+#         'drf_yasg.inspectors.FileFieldInspector',
+#         'drf_yasg.inspectors.DictFieldInspector',
+#         'drf_yasg.inspectors.SimpleFieldInspector',
+#         'drf_yasg.inspectors.StringDefaultFieldInspector',
+#     ],
+# }
 
 # # cookies
 # CSRF_COOKIE_HTTPONLY = True
@@ -160,5 +187,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# AUTH_USER_MODEL = 'nameOfTheApp.CustomUser'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
