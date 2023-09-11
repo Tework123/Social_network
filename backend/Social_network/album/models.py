@@ -7,17 +7,9 @@ from post.models import Post
 
 class Album(models.Model):
     name = models.CharField(max_length=100)
+    avatar_album = models.BooleanField(default=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     community = models.ForeignKey(Community, on_delete=models.CASCADE, blank=True, null=True)
-
-    # @property
-    # def photo(self):
-    #     print(123)
-    #     print(123)
-    #     print(123)
-    #     print(123)
-    #
-    #     return '123'
 
     def __str__(self):
         return f'{self.name}'

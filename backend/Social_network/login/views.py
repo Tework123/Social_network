@@ -11,18 +11,11 @@ from rest_framework.views import APIView
 
 from login.email import send_to_email
 from account.models import CustomUser
-from login.serializers import ProfileSerializer, CreateUserSerializer, AuthUserSerializer, \
+from login.serializers import CreateUserSerializer, AuthUserSerializer, \
     ResetPasswordSendEmailSerializer, ResetPasswordCreatePasswordSerializer
 from django.contrib.auth import authenticate, login, logout
 
 from login.utils import account_activation_token
-
-
-class ProfileList(ListAPIView):
-    # permission_classes = [IsAuthenticated]
-    queryset = CustomUser.objects.all()
-    serializer_class = ProfileSerializer
-
 
 response_schema_dict = {
     "200": openapi.Response(

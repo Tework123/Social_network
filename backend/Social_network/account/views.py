@@ -1,8 +1,9 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
 from account.serializers import AccountSerializer, AccountEditSerializer, AccountEditEducationSerializer, \
-    AccountEditWorkSerializer
+    AccountEditWorkSerializer, AccountEditAvatarSerializer
 from account.models import CustomUser, Education, Work
+from album.models import Album, Photo
 
 
 class AccountView(generics.RetrieveAPIView):
@@ -10,7 +11,6 @@ class AccountView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return CustomUser.objects.filter(pk=self.kwargs['pk']).prefetch_related('education', 'work', 'groups')
-        # select_related('content_type')
 
 
 # надо попробовать написать свою вьюапи и сериализатор и вытащить все про пользователя
@@ -30,10 +30,31 @@ class AccountEditView(generics.RetrieveUpdateAPIView):
         user.update(first_name=request.data['first_name'],
                     last_name=request.data['last_name'], phone=request.data['phone'],
                     city=request.data['city'], about_me=request.data['about_me'],
-                    avatar=request.data['avatar'], lifestyle=request.data['lifestyle'],
+                    lifestyle=request.data['lifestyle'],
                     interest=request.data['interest'], date_of_birth=request.data['date_of_birth'])
 
         return Response(status=status.HTTP_200_OK, data='Информация успешно изменена')
+
+
+class AccountEditAvatarView(generics.CreateAPIView):
+    """Обновляет фото аватара, добавляет предыдущие фото аватара в отдельный альбом"""
+    serializer_class = AccountEditAvatarSerializer
+
+    def post(self, request, *args, **kwargs):
+        user = CustomUser.objects.filter(pk=self.request.user.pk)
+
+        try:
+            avatar_album = Album.objects.get(user=self.request.user, avatar_album=True)
+        except:
+            avatar_album = Album.objects.create(name='Фото профиля', avatar_album=True,
+                                                user=self.request.user)
+
+        Photo.objects.create(image=request.data['avatar'],
+                             album_id=avatar_album.id)
+
+        user.update(avatar=request.data['avatar'])
+
+        return Response(status=status.HTTP_200_OK, data='Фото профиля успешно изменено')
 
 
 class AccountEditEducationListView(generics.ListCreateAPIView):
@@ -105,7 +126,7 @@ class AccountEditWorkListView(generics.ListCreateAPIView):
 
 
 class AccountEditWorkView(generics.RetrieveUpdateDestroyAPIView):
-    """Изменение конкретного образования"""
+    """Изменение конкретного места работы"""
     serializer_class = AccountEditWorkSerializer
 
     def get_queryset(self):

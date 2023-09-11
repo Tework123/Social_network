@@ -17,6 +17,12 @@ class AlbumListSerializer(serializers.ModelSerializer):
         fields = ['name', 'photo']
 
 
+class AlbumEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = ['name']
+
+
 class PhotoListSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
@@ -30,3 +36,15 @@ class PhotoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
         fields = ['image', 'text']
+
+
+class PhotoDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['image', 'text']
+
+
+class PhotoChangeDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['text']

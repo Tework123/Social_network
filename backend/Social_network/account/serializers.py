@@ -42,8 +42,14 @@ class AccountEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'first_name', 'last_name',
-                  'phone', 'city', 'about_me', 'avatar',
+                  'phone', 'city', 'about_me',
                   'date_of_birth', 'lifestyle', 'interest']
+
+
+class AccountEditAvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['avatar']
 
 
 class AccountEditEducationSerializer(serializers.ModelSerializer):
