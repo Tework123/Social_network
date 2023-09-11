@@ -1,12 +1,5 @@
 from rest_framework import serializers
-
-from login.models import CustomUser
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = '__all__'
+from account.models import CustomUser
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
