@@ -1,4 +1,5 @@
 from rest_framework import status, generics
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from account.serializers import AccountSerializer, AccountEditSerializer, AccountEditEducationSerializer, \
     AccountEditWorkSerializer, AccountEditAvatarSerializer
@@ -9,8 +10,10 @@ from album.models import Album, Photo
 class AccountView(generics.RetrieveAPIView):
     serializer_class = AccountSerializer
 
-    def get_queryset(self):
-        return CustomUser.objects.filter(pk=self.kwargs['pk']).prefetch_related('education', 'work', 'groups')
+    def get_object(self):
+        return get_object_or_404(CustomUser.objects
+                                 .prefetch_related('education', 'work', 'groups'),
+                                 id=self.request.user.id)
 
 
 # надо попробовать написать свою вьюапи и сериализатор и вытащить все про пользователя
