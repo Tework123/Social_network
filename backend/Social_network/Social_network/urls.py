@@ -9,11 +9,16 @@ from rest_framework import permissions
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/login/', include('login.urls')),
-
-    # авторизация
-    path('api/v1/auth/', include('rest_framework.urls')),
+    path('api/v1/account/', include('account.urls')),
+    path('api/v1/album/', include('album.urls')),
+    path('api/v1/chat/', include('chat.urls')),
+    path('api/v1/community/', include('community.urls')),
+    path('api/v1/post/', include('post.urls')),
 
     path("__debug__/", include("debug_toolbar.urls")),
+
+    # встроенная авторизация
+    # path('api/v1/auth/', include('rest_framework.urls')),
 
 ]
 

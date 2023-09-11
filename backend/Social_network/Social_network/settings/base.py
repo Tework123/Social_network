@@ -30,9 +30,14 @@ INSTALLED_APPS = [
 
     # apps
     'login.apps.LoginConfig',
+    'account.apps.AccountConfig',
+    'post.apps.PostConfig',
+    'album.apps.AlbumConfig',
+    'community.apps.CommunityConfig',
+    'chat.apps.ChatConfig',
     'tasks.apps.TasksConfig'
 ]
-AUTH_USER_MODEL = 'login.CustomUser'
+AUTH_USER_MODEL = 'account.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -128,6 +133,23 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
+# SWAGGER_SETTINGS = {
+#     "DEFAULT_MODEL_RENDERING": "example"
+# }
+
+# SWAGGER_SETTINGS = {
+#     'DEFAULT_FIELD_INSPECTORS': [
+#         'drf_yasg.inspectors.CamelCaseJSONFilter',
+#         'drf_yasg.inspectors.InlineSerializerInspector',
+#         'drf_yasg.inspectors.RelatedFieldInspector',
+#         'drf_yasg.inspectors.ChoiceFieldInspector',
+#         'drf_yasg.inspectors.FileFieldInspector',
+#         'drf_yasg.inspectors.DictFieldInspector',
+#         'drf_yasg.inspectors.SimpleFieldInspector',
+#         'drf_yasg.inspectors.StringDefaultFieldInspector',
+#     ],
+# }
+
 # # cookies
 # CSRF_COOKIE_HTTPONLY = True
 # SESSION_COOKIE_HTTPONLY = True
@@ -165,5 +187,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# AUTH_USER_MODEL = 'nameOfTheApp.CustomUser'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
