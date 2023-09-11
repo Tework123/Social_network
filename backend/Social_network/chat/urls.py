@@ -1,9 +1,10 @@
 from django.urls import path
 
-from chat.views import GetChats
+from chat.views import ChatListView, ChatEditView
 
 urlpatterns = [
 
-    path('', GetChats.as_view()),
+    path('', ChatListView.as_view()),
+    path('<int:pk>/', ChatEditView.as_view()),
 
 ]

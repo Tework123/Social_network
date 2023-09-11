@@ -6,4 +6,10 @@ from chat.models import Chat
 class ChatListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
-        fields = '__all__'
+        fields = ['name', 'user']
+
+
+class ChatEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chat
+        fields = ['name', 'user']
