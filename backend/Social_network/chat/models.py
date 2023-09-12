@@ -28,3 +28,6 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, blank=True, null=True)
     relationship = models.ForeignKey(Relationship, on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey(CustomUser, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f'{self.text}, {self.user}'
