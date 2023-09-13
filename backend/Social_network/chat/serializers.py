@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from album.models import Photo
 from chat.models import Chat, Relationship, Message
 
 
@@ -36,10 +37,32 @@ class MessageChatListSerializer(serializers.ModelSerializer):
 class MessageChatCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'date_create', 'date_change']
+        fields = ['id', 'text']
 
 
 class MessageChatEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'text', 'date_change']
+
+
+class MessageMockPhotoChatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['id', 'image', 'text']
+
+
+class MessageMockChatSerializer(serializers.ModelSerializer):
+    photo = MessageMockPhotoChatSerializer(many=True)
+
+    class Meta:
+        model = Message
+        fields = ['id', 'photo']
+
+
+class AttachPhotoMessageMockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
+        fields = ['id']
+
+

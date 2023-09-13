@@ -1,7 +1,7 @@
 from django.urls import path
 
 from chat.views import ChatListView, ChatEditView, RelationshipListView, RelationshipEditView, MessageChatListView, \
-    MessageChatEditView
+    MessageChatEditView, MessageCreateMockChatView, AttachPhotoMessageMockView
 
 urlpatterns = [
     # чаты
@@ -14,6 +14,13 @@ urlpatterns = [
     # изменение сообщения чата(pk сообщения)
     path('message/<int:pk>/', MessageChatEditView.as_view()),
 
+    # mock сообщение для чата(требуется pk чата)
+    path('messages_mock/<int:pk>/', MessageCreateMockChatView.as_view()),
+
+    # добавление фото для сообщения mock=True(требуется pk сообщения)
+    path('messages_mock_image/<int:pk>/', AttachPhotoMessageMockView.as_view()),
+
+    ########
     # диалоги
     path('dialogs/', RelationshipListView.as_view()),
     path('dialogs/<int:pk>/', RelationshipEditView.as_view()),

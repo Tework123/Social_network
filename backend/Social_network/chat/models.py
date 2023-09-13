@@ -23,8 +23,8 @@ class Relationship(models.Model):
 
 class Message(models.Model):
     text = models.TextField(max_length=2000, blank=True)
-    date_create = models.DateTimeField(blank=True)
-    date_change = models.DateTimeField(blank=True)
+    date_create = models.DateTimeField(blank=True, null=True)
+    date_change = models.DateTimeField(blank=True, null=True)
     mock = models.BooleanField(default=False)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, blank=True, null=True)
     relationship = models.ForeignKey(Relationship, on_delete=models.CASCADE, blank=True, null=True)

@@ -35,16 +35,16 @@ class PhotoListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Photo
-        fields = ['image', 'text']
+        fields = ['id', 'image', 'text']
 
 
 class PhotoDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['image', 'text']
+        fields = ['id', 'image', 'text']
 
 
 class PhotoChangeDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['text']
+        fields = ['id', 'text']

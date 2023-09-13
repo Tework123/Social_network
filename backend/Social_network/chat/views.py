@@ -3,13 +3,15 @@ import datetime
 from django.db.models import Q
 from django.shortcuts import render
 from django.utils import timezone
-from rest_framework import generics, status, viewsets
+from rest_framework import generics, status, viewsets, mixins
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
+from album.models import Photo
 from chat.models import Chat, Relationship, Message
 from chat.serializers import ChatListSerializer, ChatEditSerializer, RelationshipListSerializer, \
-    RelationshipEditSerializer, MessageChatListSerializer, MessageChatCreateSerializer, MessageChatEditSerializer
+    RelationshipEditSerializer, MessageChatListSerializer, MessageChatCreateSerializer, MessageChatEditSerializer, \
+    MessageMockChatSerializer, AttachPhotoMessageMockSerializer
 
 
 class ChatListView(generics.ListCreateAPIView):
@@ -130,66 +132,52 @@ class MessageChatListView(viewsets.ModelViewSet):
         return Response(status=status.HTTP_201_CREATED, data='Сообщение добавлено в чат')
 
 
-#  показывает этот черновик сообщения
-
-#  нужен еще запрос на показ всех фото альбома, на фронте они выбираются(уже есть запрос на все альбомы
-# это будет он же, но будут другие кнопки
-#  и отправляются их id в post запросе на прикрепление сюда
-#  добавляет фото к сообщению и создает его, либо добавляет текст к сообщению и создает его
-
-# редактирование сообщения
-# оно уже создано, на фронте будет кнопка "редактировать", внизу выводится твое редактируемое сообщение
-# можно выбирать новые картинки, менять текст(тут тоже запрос на альбомы)
-# тыкаешь на редактировать - put запрос на изменение существующего сообщения,
-# но нужно еще фото подтянуть
-
-# черновик сообщения, у него mock=True, оно снизу подгружается, если есть у данного пользователя
-# в данном чате. Это сущность сообщения с флагом, можно прикреплять фото, так как оно существует
-# отправить - mock=False, сообщение становится обычным и улетает вверх
-
-
-# когда заходишь в чат, то выполняется get запрос на последние сообщения чата
-# выполняется get запрос на твое черновое сообщение, если есть
-# оно показывается, если нет - создается с пустым текстом
-# с датой создания надо поколдовать - когда mock=False, тогда записывать дату создания
-# надо просто убрать автоматическое ее назначение, самому где надо назначать
-
-# придется для диалогов, сообщений под постами тоже самое делать? надо подумать как это объединить
-# в вк под постами не сохраняется в базу черновик, под фото тоже не сохраняются
-class MessageCreateMockChatView(generics.ListCreateAPIView):
+class MessageCreateMockChatView(generics.RetrieveAPIView):
     """Показывает mock=True(черновик) сообщение этого чата,
      создает сообщение(mock=True, черновик)(требуется id чата)"""
 
-    serializer_classes = {'list': MessageChatListSerializer,
-                          'post': MessageChatCreateSerializer}
-    default_serializer_class = MessageChatListSerializer
+    serializer_class = MessageMockChatSerializer
 
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action, self.default_serializer_class)
-
-    def get_queryset(self):
-        # проверка на существование mock, показ, но стой, он всегда будет
-        # потому что после отправки сообщения в чат сразу создается еще одно сообщение-черновик
-        # но оно пустое, в модели поменял поля, пока делаем только это функционал
-        # потом посмотрим как это можно улучшить, объединить
-        return Message.objects.filter(chat__pk=self.kwargs['pk']).order_by('-date_create')
-
-    def post(self, request, *args, **kwargs):
-        Message.objects.create(text=request.data['text'],
-                               user=self.request.user,
-                               chat_id=self.kwargs['pk'])
-        return Response(status=status.HTTP_201_CREATED, data='Сообщение создано')
+    def get_object(self):
+        chat = get_object_or_404(Chat, pk=self.kwargs['pk'])
+        try:
+            mock_message = Message.objects.get(user=self.request.user, chat__pk=chat.pk,
+                                               mock=True)
+        except:
+            mock_message = Message.objects.create(text='',
+                                                  user=self.request.user,
+                                                  chat_id=chat.pk,
+                                                  mock=True)
+        return mock_message
 
 
-class AttachPhotoToMessageView(generics.ListCreateAPIView):
+class AttachPhotoMessageMockView(generics.UpdateAPIView):
     """При нажатии прикрепить, выбранные фото добавляются к сообщению,
-     которое еще не отправлено, но это сообщение создается с флагом"""
+     которое еще не отправлено, это сообщение с mock=True(требуется id сообщения)"""
+    serializer_class = AttachPhotoMessageMockSerializer
 
     def get_queryset(self):
         pass
 
-    def post(self, request, *args, **kwargs):
-        pass
+    def put(self, request, *args, **kwargs):
+        mock_message = Message.objects.get(pk=self.kwargs['pk'])
+
+        # должен прийти put запрос с request.data с id фото, которые выбрал пользователь
+        # по id ищутся объекты фото и к их fk добавляется сообщение
+        photos = Photo.objects.filter(id__in=[1, 2, 3])
+        print(photos)
+
+        # и все таки надо many to many сделать. У фото может быть много сообщений, у сообщения
+        # много фото
+        # если графический интерфес позволяет выбрать все фото
+        # то у пользователя будут только те, которые придут ему с get запросом его альбомов
+
+        for photo in photos:
+            print(photo.message)
+            photo.message = mock_message
+            photo.save()
+
+        return Response(status=status.HTTP_200_OK, data='Фото добавлены к сообщению')
 
 
 class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
