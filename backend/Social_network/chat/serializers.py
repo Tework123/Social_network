@@ -31,7 +31,7 @@ class RelationshipEditSerializer(serializers.ModelSerializer):
 class MessageChatListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'date_create', 'date_change', 'user']
+        fields = ['id', 'text', 'date_create', 'date_change', 'user', 'mock', 'photo']
 
 
 class MessageChatCreateSerializer(serializers.ModelSerializer):
@@ -43,26 +43,10 @@ class MessageChatCreateSerializer(serializers.ModelSerializer):
 class MessageChatEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'date_change']
-
-
-class MessageMockPhotoChatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Photo
-        fields = ['id', 'image', 'text']
+        fields = ['id', 'text', 'date_change', 'photo']
 
 
 class MessageMockChatSerializer(serializers.ModelSerializer):
-    photo = MessageMockPhotoChatSerializer(many=True)
-
     class Meta:
         model = Message
-        fields = ['id', 'photo']
-
-
-class AttachPhotoMessageMockSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Photo
-        fields = ['id']
-
-
+        fields = ['id', 'text', 'photo']

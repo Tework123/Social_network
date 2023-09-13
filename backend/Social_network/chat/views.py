@@ -11,7 +11,7 @@ from album.models import Photo
 from chat.models import Chat, Relationship, Message
 from chat.serializers import ChatListSerializer, ChatEditSerializer, RelationshipListSerializer, \
     RelationshipEditSerializer, MessageChatListSerializer, MessageChatCreateSerializer, MessageChatEditSerializer, \
-    MessageMockChatSerializer, AttachPhotoMessageMockSerializer
+    MessageMockChatSerializer
 
 
 class ChatListView(generics.ListCreateAPIView):
@@ -109,7 +109,7 @@ class RelationshipEditView(generics.RetrieveUpdateDestroyAPIView):
 # вступления в чат(в группах например)
 
 class MessageChatListView(viewsets.ModelViewSet):
-    """Показывает все сообщения одного чата, создает сообщение(требуется id чата)"""
+    """Показывает все сообщения одного чата, отправляет созданное сообщение(требуется id чата)"""
 
     serializer_classes = {'list': MessageChatListSerializer,
                           'put': MessageChatCreateSerializer}
@@ -119,22 +119,20 @@ class MessageChatListView(viewsets.ModelViewSet):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
 
     def get_queryset(self):
-        return Message.objects.filter(chat__pk=self.kwargs['pk']).order_by('-date_create')
+        return Message.objects.filter(chat__pk=self.kwargs['pk'], mock=False).order_by('-date_create')
 
     # здесь нужен put для обновления поля mock = False
     def put(self, request, *args, **kwargs):
-        message = Message.objects.filter()
-        message.update(mock=False)
+        message = Message.objects.filter(user=self.request.user, chat_id=self.kwargs['pk'], mock=True)
+        message.update(mock=False, text=request.data['text'], date_create=timezone.now())
 
-        Message.objects.create(text=request.data['text'],
-                               user=self.request.user,
-                               chat_id=self.kwargs['pk'])
         return Response(status=status.HTTP_201_CREATED, data='Сообщение добавлено в чат')
 
 
-class MessageCreateMockChatView(generics.RetrieveAPIView):
-    """Показывает mock=True(черновик) сообщение этого чата,
-     создает сообщение(mock=True, черновик)(требуется id чата)"""
+class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
+    """(GET) Показывает mock=True(черновик) сообщение этого чата,
+     создает сообщение(mock=True, черновик)(требуется id чата)
+     (PUT) Добавляет фото из альбома к сообщению"""
 
     serializer_class = MessageMockChatSerializer
 
@@ -150,32 +148,14 @@ class MessageCreateMockChatView(generics.RetrieveAPIView):
                                                   mock=True)
         return mock_message
 
-
-class AttachPhotoMessageMockView(generics.UpdateAPIView):
-    """При нажатии прикрепить, выбранные фото добавляются к сообщению,
-     которое еще не отправлено, это сообщение с mock=True(требуется id сообщения)"""
-    serializer_class = AttachPhotoMessageMockSerializer
-
-    def get_queryset(self):
-        pass
-
     def put(self, request, *args, **kwargs):
-        mock_message = Message.objects.get(pk=self.kwargs['pk'])
+        mock_message = Message.objects.get(user=self.request.user,
+                                           chat_id=self.kwargs['pk'], mock=True)
 
-        # должен прийти put запрос с request.data с id фото, которые выбрал пользователь
-        # по id ищутся объекты фото и к их fk добавляется сообщение
-        photos = Photo.objects.filter(id__in=[1, 2, 3])
-        print(photos)
-
-        # и все таки надо many to many сделать. У фото может быть много сообщений, у сообщения
-        # много фото
-        # если графический интерфес позволяет выбрать все фото
-        # то у пользователя будут только те, которые придут ему с get запросом его альбомов
-
+        mock_message.photo.clear()
+        photos = request.data.getlist('photo')
         for photo in photos:
-            print(photo.message)
-            photo.message = mock_message
-            photo.save()
+            mock_message.photo.add(photo)
 
         return Response(status=status.HTTP_200_OK, data='Фото добавлены к сообщению')
 
@@ -190,8 +170,11 @@ class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         message = Message.objects.filter(pk=self.kwargs['pk'])
-        print(message)
-        # достать все фото, у которых id_message = этому сообщению, и менять уже их
+
+        message[0].photo.clear()
+        photos = request.data.getlist('photo')
+        for photo in photos:
+            message[0].photo.add(photo)
 
         message.update(text=request.data['text'], date_change=timezone.now())
         return Response(status=status.HTTP_200_OK, data='Сообщение изменено')
@@ -200,4 +183,7 @@ class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
         Message.objects.get(pk=self.kwargs['pk']).delete()
         return Response(status=status.HTTP_200_OK, data='Сообщение удалено')
 
-# еще два класса для диалога
+# протестировать все вручную
+
+# далее надо диалоги сделать, посмотреть как будет работать прикрепление фоточек,
+# потом уже permissions,

@@ -9,7 +9,7 @@ class AlbumListSerializer(serializers.ModelSerializer):
 
     def last_photo(self, obj):
         # здесь нужен order_by по дате добавления фото
-        last_photo = Photo.objects.filter(album_id=obj.pk)[:1]
+        last_photo = Photo.objects.filter(album_photo=obj.pk)[:1]
         return PhotoListSerializer(last_photo, many=True).data
 
     class Meta:
