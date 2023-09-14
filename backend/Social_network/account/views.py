@@ -1,6 +1,9 @@
 from rest_framework import status, generics
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from account.permissions import IsCreator
 from account.serializers import AccountSerializer, AccountEditSerializer, AccountEditEducationSerializer, \
     AccountEditWorkSerializer, AccountEditAvatarSerializer
 from account.models import CustomUser, Education, Work
@@ -9,6 +12,7 @@ from album.models import Album, Photo
 
 class AccountView(generics.RetrieveAPIView):
     serializer_class = AccountSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return get_object_or_404(CustomUser.objects
@@ -20,15 +24,18 @@ class AccountView(generics.RetrieveAPIView):
 # также его друзей(relationships), группы(communa), еще посты.
 class AccountEditView(generics.RetrieveUpdateAPIView):
     serializer_class = AccountEditSerializer
+    # теоретически здесь надо сделать, чтобы только создатель аккаунта мог менять поля,
+    # хотя другой человек сюда и не попадет
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return CustomUser.objects.filter(pk=self.kwargs['pk'])
+    def get_object(self):
+        return get_object_or_404(CustomUser, id=self.request.user.id)
 
     def put(self, request, *args, **kwargs):
         serializer = AccountEditSerializer(request.data)
         serializer.validate(request.data)
 
-        user = CustomUser.objects.filter(pk=self.kwargs['pk'])
+        user = CustomUser.objects.filter(id=self.request.user.id)
 
         user.update(first_name=request.data['first_name'],
                     last_name=request.data['last_name'], phone=request.data['phone'],
@@ -42,6 +49,7 @@ class AccountEditView(generics.RetrieveUpdateAPIView):
 class AccountEditAvatarView(generics.CreateAPIView):
     """Обновляет фото аватара, добавляет предыдущие фото аватара в отдельный альбом"""
     serializer_class = AccountEditAvatarSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         user = CustomUser.objects.filter(pk=self.request.user.pk)
@@ -63,6 +71,7 @@ class AccountEditAvatarView(generics.CreateAPIView):
 class AccountEditEducationListView(generics.ListCreateAPIView):
     """Показывает все образования, создает новое"""
     serializer_class = AccountEditEducationSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Education.objects.filter(user=self.request.user)
@@ -84,6 +93,8 @@ class AccountEditEducationListView(generics.ListCreateAPIView):
 class AccountEditEducationView(generics.RetrieveUpdateDestroyAPIView):
     """Изменение конкретного образования"""
     serializer_class = AccountEditEducationSerializer
+
+    permission_classes = [IsAuthenticated, IsCreator]
 
     def get_queryset(self):
         return Education.objects.filter(pk=self.kwargs['pk'])
@@ -110,6 +121,7 @@ class AccountEditEducationView(generics.RetrieveUpdateDestroyAPIView):
 class AccountEditWorkListView(generics.ListCreateAPIView):
     """Показывает все места работы, создает новое"""
     serializer_class = AccountEditWorkSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Work.objects.filter(user=self.request.user)
@@ -131,6 +143,7 @@ class AccountEditWorkListView(generics.ListCreateAPIView):
 class AccountEditWorkView(generics.RetrieveUpdateDestroyAPIView):
     """Изменение конкретного места работы"""
     serializer_class = AccountEditWorkSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Work.objects.filter(pk=self.kwargs['pk'])

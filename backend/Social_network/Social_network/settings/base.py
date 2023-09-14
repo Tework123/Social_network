@@ -29,12 +29,12 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # apps
-    'login.apps.LoginConfig',
     'account.apps.AccountConfig',
-    'post.apps.PostConfig',
     'album.apps.AlbumConfig',
-    'community.apps.CommunityConfig',
     'chat.apps.ChatConfig',
+    'community.apps.CommunityConfig',
+    'login.apps.LoginConfig',
+    'post.apps.PostConfig',
     'tasks.apps.TasksConfig'
 ]
 AUTH_USER_MODEL = 'account.CustomUser'
