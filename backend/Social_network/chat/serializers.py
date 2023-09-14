@@ -4,6 +4,7 @@ from album.models import Photo
 from chat.models import Chat, Relationship, Message
 
 
+# chat
 class ChatListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
@@ -16,18 +17,7 @@ class ChatEditSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'user']
 
 
-class RelationshipListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Relationship
-        fields = ['id', 'user_1', 'user_2', 'status']
-
-
-class RelationshipEditSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Relationship
-        fields = ['id', 'status']
-
-
+# chat message
 class MessageChatListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
@@ -43,10 +33,54 @@ class MessageChatCreateSerializer(serializers.ModelSerializer):
 class MessageChatEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'date_change', 'photo']
+        fields = ['id', 'text', 'photo']
 
 
 class MessageMockChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'photo']
+        fields = ['id', 'photo']
+
+
+# dialogs
+class RelationshipListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Relationship
+        fields = ['id', 'user_1', 'user_2', 'status']
+
+
+class RelationshipCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Relationship
+        fields = ['id', 'user_2', 'status']
+
+
+class RelationshipEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Relationship
+        fields = ['id', 'status']
+
+
+# dialogs message
+class MessageRelationshipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'text', 'date_create', 'date_change', 'user', 'mock', 'photo']
+
+
+class MessageRelationshipCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'text']
+
+
+class MessageRelationshipEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'text', 'date_change', 'photo']
+
+
+class MessageMockRelationshipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'photo']
