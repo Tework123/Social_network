@@ -1,7 +1,5 @@
-from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-
 from account.models import CustomUser, Education, Work
 
 

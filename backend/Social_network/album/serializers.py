@@ -14,13 +14,13 @@ class AlbumListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ['name', 'photo']
+        fields = ['id', 'name', 'photo']
 
 
 class AlbumEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
-        fields = ['name']
+        fields = ['id', 'name']
 
 
 class PhotoListSerializer(serializers.ModelSerializer):

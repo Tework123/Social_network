@@ -15,6 +15,7 @@ class Photo(models.Model):
 
 class Album(models.Model):
     name = models.CharField(max_length=100)
+    # дата создания для сортировки по ней
     avatar_album = models.BooleanField(default=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     community = models.ForeignKey(Community, on_delete=models.CASCADE, blank=True, null=True)

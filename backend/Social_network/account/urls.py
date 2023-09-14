@@ -5,6 +5,7 @@ from account.views import AccountView, AccountEditView, AccountEditEducationList
 
 urlpatterns = [
 
+    # показывает информация об аккаунте
     path('im/', AccountView.as_view()),
 
     # изменение информации об аккаунте
