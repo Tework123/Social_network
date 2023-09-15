@@ -8,7 +8,7 @@ from chat.models import Chat, Relationship, Message
 class ChatListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
-        fields = ['id', 'name', 'user']
+        fields = ['id', 'name']
 
 
 class ChatEditSerializer(serializers.ModelSerializer):

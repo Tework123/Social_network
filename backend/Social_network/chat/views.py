@@ -6,10 +6,12 @@ from django.shortcuts import render
 from django.utils import timezone
 from rest_framework import generics, status, viewsets, mixins
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from album.models import Photo
 from chat.models import Chat, Relationship, Message
+from chat.permissions import IsChatUser, IsChatUserDetail
 from chat.serializers import ChatListSerializer, ChatEditSerializer, RelationshipListSerializer, \
     RelationshipEditSerializer, MessageChatListSerializer, MessageChatCreateSerializer, MessageChatEditSerializer, \
     MessageMockChatSerializer, RelationshipCreateSerializer
@@ -18,6 +20,7 @@ from chat.serializers import ChatListSerializer, ChatEditSerializer, Relationshi
 class ChatListView(generics.ListCreateAPIView):
     """Показывает все чаты пользователя, создает чат"""
     serializer_class = ChatListSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Chat.objects.filter(user=self.request.user)
@@ -25,9 +28,9 @@ class ChatListView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         chat = Chat.objects.create(name=request.data['name'], open_or_close=True)
 
-        # добавлять не любых юзеров можно в чат, а только друзей, как отсортировать
         # в дополнениях к запросу отправить список юзеров? Просто запрос будет на relationship
-        # where status = friend
+        # нужна отдельная урл на запрос друзей получается, where status = friend
+        # на фронте помечаешь нужных, отправляешь post запрос сюда
         # на фронте все равно не будет списка, как здесь в rest
         for user in request.data.getlist('user'):
             chat.user.add(user)
@@ -38,9 +41,10 @@ class ChatListView(generics.ListCreateAPIView):
 class ChatEditView(generics.RetrieveUpdateDestroyAPIView):
     """Показывает один чат, изменяет, удаляет его(требуется id чата)"""
     serializer_class = ChatEditSerializer
+    permission_classes = [IsAuthenticated, IsChatUser]
 
     def get_object(self):
-        return get_object_or_404(Chat, pk=self.kwargs['pk'])
+        return get_object_or_404(Chat.objects.prefetch_related('user'), pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
         chat = Chat.objects.filter(pk=self.kwargs['pk'])
@@ -66,12 +70,14 @@ class MessageChatListView(viewsets.ModelViewSet):
     serializer_classes = {'list': MessageChatListSerializer,
                           'put': MessageChatCreateSerializer}
     default_serializer_class = MessageChatListSerializer
+    permission_classes = [IsAuthenticated, IsChatUser]
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
 
     def get_queryset(self):
-        return Message.objects.filter(chat__pk=self.kwargs['pk'], mock=False).order_by('-date_create')
+        return (Message.objects.filter(chat__pk=self.kwargs['pk'], mock=False)
+                .prefetch_related('photo').order_by('-date_create'))
 
     # здесь нужен put для обновления поля mock = False
     def put(self, request, *args, **kwargs):
@@ -87,6 +93,8 @@ class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
      (PUT) Добавляет фото из альбома к сообщению"""
 
     serializer_class = MessageMockChatSerializer
+    # здесь не нужен отдельный permissions, доступ по pk только к чату
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         chat = get_object_or_404(Chat, pk=self.kwargs['pk'])
@@ -115,6 +123,9 @@ class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
 class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
     """Показывает, изменяет, удаляет одно сообщение(требуется id сообщения)"""
     serializer_class = MessageChatEditSerializer
+    permission_classes = []
+
+    #
 
     def get_object(self):
         # достать еще все фото с новым сериализатором
@@ -194,6 +205,7 @@ class RelationshipEditView(generics.RetrieveUpdateDestroyAPIView):
 
     # что такое черный список? Это отношения, но если удалить из друзей, то отношений нет
     # при этом в черном списке человек должен оставаться
+    # это будет особое отношение, в друзьях показываться не будет, писать не сможет
     def delete(self, request, *args, **kwargs):
         Relationship.objects.get(pk=self.kwargs['pk']).delete()
         return Response(status=status.HTTP_200_OK, data='Отношения успешно удалены')
@@ -253,6 +265,5 @@ class MessageCreateMockRelationshipView(generics.RetrieveUpdateDestroyAPIView):
             mock_message.photo.add(photo)
 
         return Response(status=status.HTTP_200_OK, data='Фото добавлены к сообщению')
-
 
 # потом уже permissions,

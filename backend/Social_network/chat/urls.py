@@ -1,7 +1,10 @@
 from django.urls import path
 
-from chat.views import ChatListView, ChatEditView, RelationshipListView, RelationshipEditView, MessageChatListView, \
-    MessageChatEditView, MessageCreateMockChatView, MessageRelationshipListView, MessageCreateMockRelationshipView
+from chat.views import (ChatListView, ChatEditView, RelationshipListView,
+                        RelationshipEditView, MessageChatListView,
+                        MessageChatEditView, MessageCreateMockChatView,
+                        MessageRelationshipListView,
+                        MessageCreateMockRelationshipView)
 
 urlpatterns = [
     # чаты

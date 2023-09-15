@@ -8,6 +8,10 @@ class Chat(models.Model):
     open_or_close = models.BooleanField(default=False)
     user = models.ManyToManyField(CustomUser)
 
+    # нужен создатель чата, он по умолчанию администратор
+    # надо many_to_many для администратора, чтобы можно было
+    # их добавлять
+
     def __str__(self):
         return f'{self.name}'
 
