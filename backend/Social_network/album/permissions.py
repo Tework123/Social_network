@@ -1,28 +1,28 @@
 from rest_framework import permissions
 
+from album.models import Photo, Album
 
-class IsCreator(permissions.BasePermission):
-    edit_methods = ("PUT", "PATCH", "DELETE", 'GET', 'POST')
 
+class IsAlbumCreator(permissions.BasePermission):
+    SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+    CREATE_METHODS = ['POST']
+
+    # для всех запросов, в том числе и post
+    # не используем для проверки print здесь
     def has_permission(self, request, view):
 
-        # if request.method == 'GET':
-        #     return True
+        if request.method in self.CREATE_METHODS:
+            album = Album.objects.filter(pk=view.kwargs['pk']).select_related('user')
+            if album[0].user == request.user:
+                return True
+            else:
+                return False
 
-        # education = Education.objects.filter(user=request.user)
-        # if education:
-        #     return True
-
-        # user = request.user
-        # quiz = Quiz.objects.get(slug=request.resolver_match.kwargs["slug"])
-        # for group in quiz.group.all():
-        #     if user.groups.filter(name=group.name).exists():
-        #         return True
-
-        # стандартная проверка
         if request.user.is_authenticated:
             return True
+        return False
 
+    # для всех запросов, кроме post, для get_object
     def has_object_permission(self, request, view, obj):
 
         # более избирательные проверки

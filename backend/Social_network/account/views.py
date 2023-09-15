@@ -53,15 +53,15 @@ class AccountEditAvatarView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        user = CustomUser.objects.filter(pk=self.request.user.pk)
+        user = CustomUser.objects.filter(id=self.request.user.id)
 
         try:
-            avatar_album = Album.objects.get(user=self.request.user, avatar_album=True)
+            avatar_album = Album.objects.get(user=user[0], avatar_album=True)
         except Exception:
             avatar_album = Album.objects.create(name='Фото профиля', avatar_album=True,
-                                                user=self.request.user)
+                                                user=user[0])
 
-        photo = Photo.objects.create(image=request.data['avatar'])
+        photo = Photo.objects.create(image=request.data['avatar'], user=user[0])
 
         avatar_album.photo.add(photo)
 
