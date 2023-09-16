@@ -15,7 +15,7 @@ services:
       - static_value:/app/static/
       - media_value:/app/media/
     ports:
-      - '8000'
+      - '8000:8000'
     env_file:
       - ./.env
     environment:
@@ -53,23 +53,26 @@ services:
       - POSTGRES_PASSWORD=$PASSWORD
       - POSTGRES_DB=$NAME
 
+
+  celery:
+    build: ./backend/Social_network
+    command: celery --app=Social_network worker --loglevel=info
+    volumes:
+      - ./backend/Social_network:/usr/src/app/
+    environment:
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - backend
+      - redis
+
+  redis:
+    image: redis:7.2-alpine
+
+
 volumes:
   postgres_data:
   static_value:
   media_value:
 
-#  celery:
-#    build: ./backend/Social_network
-#    command: celery --app=core worker --loglevel=info
-#    volumes:
-#      - ./backend/Social_network:/usr/src/app/
-#    environment:
-#      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-#      - CELERY_BROKER=redis://redis:6379/0
-#      - CELERY_BACKEND=redis://redis:6379/0
-#    depends_on:
-#      - backend
-#      - redis
-
-#  redis:
-#    image: redis:7-alpine
