@@ -1,24 +1,22 @@
-import datetime
-
 from django.db.models import Q
 from django.http import QueryDict
-from django.shortcuts import render
 from django.utils import timezone
-from rest_framework import generics, status, viewsets, mixins
+from rest_framework import generics, status, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from album.models import Photo
 from chat.models import Chat, Relationship, Message
-from chat.permissions import IsChatUser, IsChatUserDetail
-from chat.serializers import ChatListSerializer, ChatEditSerializer, RelationshipListSerializer, \
-    RelationshipEditSerializer, MessageChatListSerializer, MessageChatCreateSerializer, MessageChatEditSerializer, \
-    MessageMockChatSerializer, RelationshipCreateSerializer
+from chat.permissions import IsChatUser, IsMessageCreator, IsRelationshipUser
+from chat.serializers import (ChatListSerializer, ChatEditSerializer,
+                              RelationshipListSerializer,
+                              RelationshipEditSerializer, MessageChatListSerializer,
+                              MessageChatCreateSerializer, MessageChatEditSerializer,
+                              MessageMockChatSerializer, RelationshipCreateSerializer)
 
 
 class ChatListView(generics.ListCreateAPIView):
-    """Показывает все чаты пользователя, создает чат"""
+    """Показывает все чаты пользователя с первым сообщением каждого чата, создает чат"""
     serializer_class = ChatListSerializer
     permission_classes = [IsAuthenticated]
 
@@ -81,7 +79,8 @@ class MessageChatListView(viewsets.ModelViewSet):
 
     # здесь нужен put для обновления поля mock = False
     def put(self, request, *args, **kwargs):
-        message = Message.objects.filter(user=self.request.user, chat_id=self.kwargs['pk'], mock=True)
+        message = Message.objects.filter(user=self.request.user,
+                                         chat_id=self.kwargs['pk'], mock=True)
         message.update(mock=False, text=request.data['text'], date_create=timezone.now())
 
         return Response(status=status.HTTP_201_CREATED, data='Сообщение добавлено в чат')
@@ -93,8 +92,7 @@ class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
      (PUT) Добавляет фото из альбома к сообщению"""
 
     serializer_class = MessageMockChatSerializer
-    # здесь не нужен отдельный permissions, доступ по pk только к чату
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsChatUser]
 
     def get_object(self):
         chat = get_object_or_404(Chat, pk=self.kwargs['pk'])
@@ -123,20 +121,20 @@ class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
 class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
     """Показывает, изменяет, удаляет одно сообщение(требуется id сообщения)"""
     serializer_class = MessageChatEditSerializer
-    permission_classes = []
-
-    #
+    permission_classes = [IsAuthenticated, IsMessageCreator]
 
     def get_object(self):
         # достать еще все фото с новым сериализатором
-        return get_object_or_404(Message.objects.prefetch_related('photo'), pk=self.kwargs['pk'])
+        return get_object_or_404(Message.objects.prefetch_related('photo'),
+                                 pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
         message = Message.objects.filter(pk=self.kwargs['pk'])
 
         # Когда фронт возвращает выбранные фото пользователем, тогда приходит словарь,
-        # а не QueryDict django(из граф. интерфейса), поэтому нужны преобразования: уже без getlist
-        if type(request.data) == dict:
+        # а не QueryDict django(из граф. интерфейса),
+        # поэтому нужны преобразования: уже без getlist
+        if type(request.data) is dict:
             query_dict = QueryDict('', mutable=True)
             query_dict.update(request.data)
             photos = query_dict['photo']
@@ -162,6 +160,7 @@ class RelationshipListView(viewsets.ModelViewSet):
     serializer_classes = {'list': RelationshipListSerializer,
                           'post': RelationshipCreateSerializer}
     default_serializer_class = RelationshipListSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
@@ -181,22 +180,26 @@ class RelationshipListView(viewsets.ModelViewSet):
                                                          Q(user_2=user, user_1=user_2))
 
         if exist_relationship:
-            return Response(status=status.HTTP_200_OK, data='Этот пользователь уже связан с тобой')
+            return Response(status=status.HTTP_200_OK,
+                            data='Этот пользователь уже связан с тобой')
 
         Relationship.objects.create(user_1=user,
                                     user_2_id=user_2,
                                     status=request.data['status'])
 
-        return Response(status=status.HTTP_201_CREATED, data='Отношения с пользователем установлены')
+        return Response(status=status.HTTP_201_CREATED,
+                        data='Отношения с пользователем установлены')
 
 
 class RelationshipEditView(generics.RetrieveUpdateDestroyAPIView):
     """Показывает один диалог, изменяет, удаляет его(требуется id диалога)"""
 
     serializer_class = RelationshipEditSerializer
+    permission_classes = [IsAuthenticated, IsRelationshipUser]
 
     def get_object(self):
-        return get_object_or_404(Relationship, pk=self.kwargs['pk'])
+        return get_object_or_404(Relationship.objects.
+                                 select_related('user_1', 'user_2'), pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
         relationship = Relationship.objects.filter(pk=self.kwargs['pk'])
@@ -211,29 +214,30 @@ class RelationshipEditView(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_200_OK, data='Отношения успешно удалены')
 
 
-#  permissions
-#  когда пытается получить доступ к чату из url, то будет блок, ничего не показывает, просто блокирует
-# когда ты не состоишь в этом чате, можно только по приглашению? Либо специальная кнопка для
-# вступления в чат(в группах например)
 class MessageRelationshipListView(viewsets.ModelViewSet):
-    """Показывает все сообщения одного диалога, отправляет созданное сообщение(требуется id диалога)"""
+    """Показывает все сообщения одного диалога,
+     отправляет созданное сообщение(требуется id диалога)"""
 
     serializer_classes = {'list': MessageChatListSerializer,
                           'put': MessageChatCreateSerializer}
     default_serializer_class = MessageChatListSerializer
+    permission_classes = [IsAuthenticated, IsRelationshipUser]
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.default_serializer_class)
 
     def get_queryset(self):
-        return Message.objects.filter(relationship__pk=self.kwargs['pk'], mock=False).order_by('-date_create')
+        return (Message.objects.filter(relationship__pk=self.kwargs['pk'], mock=False)
+                .order_by('-date_create'))
 
     # здесь нужен put для обновления поля mock = False
     def put(self, request, *args, **kwargs):
-        message = Message.objects.filter(user=self.request.user, relationship_id=self.kwargs['pk'], mock=True)
+        message = Message.objects.filter(user=self.request.user,
+                                         relationship_id=self.kwargs['pk'], mock=True)
         message.update(mock=False, text=request.data['text'], date_create=timezone.now())
 
-        return Response(status=status.HTTP_201_CREATED, data='Сообщение добавлено в отношение')
+        return Response(status=status.HTTP_201_CREATED,
+                        data='Сообщение добавлено в отношение')
 
 
 class MessageCreateMockRelationshipView(generics.RetrieveUpdateDestroyAPIView):
@@ -242,11 +246,13 @@ class MessageCreateMockRelationshipView(generics.RetrieveUpdateDestroyAPIView):
      (PUT) Добавляет фото из альбома к сообщению"""
 
     serializer_class = MessageMockChatSerializer
+    permission_classes = [IsAuthenticated, IsRelationshipUser]
 
     def get_object(self):
         relationship = get_object_or_404(Relationship, pk=self.kwargs['pk'])
         try:
-            mock_message = Message.objects.get(user=self.request.user, relationship__pk=relationship.pk,
+            mock_message = Message.objects.get(user=self.request.user,
+                                               relationship__pk=relationship.pk,
                                                mock=True)
         except:
             mock_message = Message.objects.create(text='',
@@ -265,5 +271,3 @@ class MessageCreateMockRelationshipView(generics.RetrieveUpdateDestroyAPIView):
             mock_message.photo.add(photo)
 
         return Response(status=status.HTTP_200_OK, data='Фото добавлены к сообщению')
-
-# потом уже permissions,

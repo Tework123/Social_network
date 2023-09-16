@@ -6,10 +6,8 @@
 # для mock сообщения - как для обычного скорее всего
 from django.db.models import Prefetch
 from rest_framework import permissions
-
 from account.models import CustomUser
-from album.models import Photo, Album
-from chat.models import Chat, Message
+from chat.models import Chat, Message, Relationship
 
 
 class IsChatUser(permissions.BasePermission):
@@ -20,6 +18,7 @@ class IsChatUser(permissions.BasePermission):
     # не используем для проверки print здесь
     def has_permission(self, request, view):
         # 18 sql query nice
+        # select_related для fk
         chat = (Chat.objects.filter(pk=view.kwargs['pk'])
                 .prefetch_related(Prefetch('user',
                                            queryset=CustomUser.objects.filter(
@@ -61,5 +60,39 @@ class IsChatUserDetail(permissions.BasePermission):
 
     # для всех запросов, кроме post и get
     def has_object_permission(self, request, view, obj):
+
+        return True
+
+
+class IsRelationshipUser(permissions.BasePermission):
+    SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+    CREATE_METHODS = ['POST']
+
+    def has_permission(self, request, view):
+        relationship = Relationship.objects.filter(pk=view.kwargs['pk']).select_related('user_1', 'user_2')
+
+        if request.user == relationship[0].user_1 or request.user == relationship[0].user_2:
+            return True
+
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        return True
+
+
+class IsMessageCreator(permissions.BasePermission):
+    SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+    CREATE_METHODS = ['POST']
+
+    def has_permission(self, request, view):
+        message = Message.objects.filter(pk=view.kwargs['pk'], user=request.user)
+        if message:
+            return True
+
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        # if obj.user == request.user:
+        #     return True
 
         return True

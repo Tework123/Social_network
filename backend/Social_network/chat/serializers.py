@@ -6,9 +6,16 @@ from chat.models import Chat, Relationship, Message
 
 # chat
 class ChatListSerializer(serializers.ModelSerializer):
+    message = serializers.SerializerMethodField('last_message')
+
+    def last_message(self, obj):
+        last_message = Message.objects.filter(chat_id=obj.pk).prefetch_related(
+            'photo').order_by('-date_create')[:1]
+        return MessageChatEditSerializer(last_message, many=True).data
+
     class Meta:
         model = Chat
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'message']
 
 
 class ChatEditSerializer(serializers.ModelSerializer):
@@ -33,7 +40,7 @@ class MessageChatCreateSerializer(serializers.ModelSerializer):
 class MessageChatEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'photo']
+        fields = ['id', 'text', 'date_create', 'date_change', 'photo']
 
 
 class MessageMockChatSerializer(serializers.ModelSerializer):
