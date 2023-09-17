@@ -16,7 +16,7 @@ def run_task(request):
 
     else:
         task = create_task.delay(int(1))
-        return JsonResponse({"hello": "dodik"}, status=202)
+        return JsonResponse({"task_id": task.id}, status=202)
 
 
 @csrf_exempt

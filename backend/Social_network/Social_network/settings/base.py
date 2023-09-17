@@ -1,5 +1,9 @@
 import os
+from datetime import timedelta
 from pathlib import Path
+import tasks.tasks
+
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -114,6 +118,19 @@ REST_FRAMEWORK = {
 # Celery
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+
+CELERY_IMPORTS = [
+    'tasks.tasks',
+    'Social_network.tasks',
+    'tasks'
+]
+
+CELERY_BEAT_SCHEDULE = {
+    "create_task": {
+        "task": "Social_network.tasks.create_task",
+        'schedule': timedelta(seconds=10),
+    },
+}
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
