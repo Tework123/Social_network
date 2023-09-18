@@ -42,18 +42,21 @@ response_schema_dict = {
 class CreateUserView(CreateAPIView):
     serializer_class = CreateUserSerializer
 
-    @swagger_auto_schema(responses=response_schema_dict)
-    # @swagger_auto_schema(operation_description="partial_update description override", responses={404: 'slug not found'})
-    # @swagger_auto_schema(method='post', operation_description="HELLO EVERYONE")
-    @action(detail=False, methods=['post'])
+    # @swagger_auto_schema(responses=response_schema_dict)
+    # # @swagger_auto_schema(operation_description="partial_update description override", responses={404: 'slug not found'})
+    # # @swagger_auto_schema(method='post', operation_description="HELLO EVERYONE")
+    # @action(detail=False, methods=['post'])
     def post(self, request, *args, **kwargs):
+        serializer = CreateUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         try:
-            CustomUser.objects.get(email=self.request.data['email'])
+            CustomUser.objects.get(email=request.data['email'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
         except Exception:
 
-            user = CustomUser.objects.create_user(email=self.request.data['email'],
-                                                  password=self.request.data['password'],
+            user = CustomUser.objects.create_user(email=request.data['email'],
+                                                  password=request.data['password'],
                                                   is_active=False)
 
             # отправка на email
@@ -69,6 +72,9 @@ class RegisterUserTryView(CreateAPIView):
     serializer_class = CreateUserSerializer
 
     def post(self, request, *args, **kwargs):
+        serializer = CreateUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = get_object_or_404(CustomUser, email=request.data['email'])
         if user.is_active:
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Ваш аккаунт уже подтвержден')
@@ -86,6 +92,9 @@ class AuthUserView(CreateAPIView):
     serializer_class = AuthUserSerializer
 
     def post(self, request, *args, **kwargs):
+        serializer = AuthUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
             try:
                 user = CustomUser.objects.get(email=request.data['email'])
@@ -99,7 +108,6 @@ class AuthUserView(CreateAPIView):
 
             return Response(status=status.HTTP_200_OK,
                             data='Авторизация тестового юзера прошла успешно')
-
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
         user = authenticate(email=user.email, password=request.data['password'])
@@ -117,8 +125,6 @@ def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = get_object_or_404(CustomUser, pk=uid)
-
-
     except (TypeError, ValueError, OverflowError):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
@@ -127,7 +133,6 @@ def activate(request, uidb64, token):
         user.save()
         login(request, user)
 
-        # return redirect('home')
         return Response(status=status.HTTP_200_OK, data='Ваш аккаунт активирован')
     else:
         return Response(status=status.HTTP_403_FORBIDDEN, data='Время жизни ссылки истекло')
@@ -137,6 +142,9 @@ class ResetPasswordSendEmail(CreateAPIView):
     serializer_class = ResetPasswordSendEmailSerializer
 
     def post(self, request, *args, **kwargs):
+        serializer = ResetPasswordSendEmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
         # отправка на email
@@ -172,15 +180,8 @@ class ResetPasswordCreatePassword(APIView):
 
         if user is None and not account_activation_token.check_token(user, token):
             return Response(status=status.HTTP_403_FORBIDDEN, data='Время жизни ссылки истекло')
+
         user = get_object_or_404(CustomUser, email=user.email)
-        # print(self.request.data['confirm_password'])
-
-        # if self.request.data['password'] != self.request.data['confirm_password']:
-        #     return Response({
-        #         'status': 400,
-        #         'message': 'Введенные пароли не совпадают',
-        #     })
-
         user.set_password(serializer.data['password'])
         user.save()
 

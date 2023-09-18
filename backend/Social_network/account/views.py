@@ -33,6 +33,10 @@ class AccountEditView(generics.RetrieveUpdateAPIView):
         return get_object_or_404(CustomUser, id=self.request.user.id)
 
     def put(self, request, *args, **kwargs):
+        # надо к каждому запросу от зарегистрированного пользователя
+        # в header добавлять этот токен
+        # надо везде обработать ошибки, на кроме get request?
+        # далее пытаемся отправить асинхронный емайл на почту
         serializer = AccountEditSerializer(request.data)
         serializer.validate(request.data)
 
