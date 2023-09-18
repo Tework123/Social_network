@@ -18,11 +18,10 @@ class AlbumListView(generics.ListCreateAPIView):
         return (Album.objects.filter(user=self.request.user).
                 prefetch_related('photo').order_by('date_create'))
 
-
-def post(self, request, *args, **kwargs):
-    Album.objects.create(name=request.data['name'],
-                         user=self.request.user)
-    return Response(status=status.HTTP_201_CREATED, data='Альбом успешно добавлен')
+    def post(self, request, *args, **kwargs):
+        Album.objects.create(name=request.data['name'],
+                             user=self.request.user)
+        return Response(status=status.HTTP_201_CREATED, data='Альбом успешно добавлен')
 
 
 class AlbumEditView(generics.RetrieveUpdateDestroyAPIView):

@@ -92,8 +92,8 @@ class AuthUserView(CreateAPIView):
     serializer_class = AuthUserSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = AuthUserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        # serializer = AuthUserSerializer(data=request.data)
+        # serializer.is_valid(raise_exception=True)
 
         if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
             try:
@@ -142,9 +142,6 @@ class ResetPasswordSendEmail(CreateAPIView):
     serializer_class = ResetPasswordSendEmailSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = ResetPasswordSendEmailSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
         # отправка на email

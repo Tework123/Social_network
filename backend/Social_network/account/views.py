@@ -33,12 +33,8 @@ class AccountEditView(generics.RetrieveUpdateAPIView):
         return get_object_or_404(CustomUser, id=self.request.user.id)
 
     def put(self, request, *args, **kwargs):
-        # надо к каждому запросу от зарегистрированного пользователя
-        # в header добавлять этот токен
-        # надо везде обработать ошибки, на кроме get request?
-        # далее пытаемся отправить асинхронный емайл на почту
-        serializer = AccountEditSerializer(request.data)
-        serializer.validate(request.data)
+        serializer = AccountEditSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         user = CustomUser.objects.filter(id=self.request.user.id)
 
@@ -57,11 +53,14 @@ class AccountEditAvatarView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
+        serializer = AccountEditAvatarSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = CustomUser.objects.filter(id=self.request.user.id)
 
         try:
             avatar_album = Album.objects.get(user=user[0], avatar_album=True)
-        except Exception:
+        except:
             avatar_album = Album.objects.create(name='Фото профиля', avatar_album=True,
                                                 user=user[0])
 
@@ -83,8 +82,8 @@ class AccountEditEducationListView(generics.ListCreateAPIView):
         return Education.objects.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
-        serializer = AccountEditEducationSerializer(request.data)
-        serializer.validate(request.data)
+        serializer = AccountEditEducationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         Education.objects.create(city=request.data['city'],
                                  name=request.data['name'],
@@ -105,8 +104,8 @@ class AccountEditEducationView(generics.RetrieveUpdateDestroyAPIView):
         return get_object_or_404(Education, pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        serializer = AccountEditEducationSerializer(request.data)
-        serializer.validate(request.data)
+        serializer = AccountEditEducationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         education = Education.objects.filter(pk=self.kwargs['pk'])
 
@@ -132,7 +131,8 @@ class AccountEditWorkListView(generics.ListCreateAPIView):
         return Work.objects.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
-        serializer = AccountEditWorkSerializer(request.data)
+        serializer = AccountEditWorkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         serializer.validate(request.data)
 
         Work.objects.create(city=request.data['city'],
@@ -154,7 +154,8 @@ class AccountEditWorkView(generics.RetrieveUpdateDestroyAPIView):
         return get_object_or_404(Work, pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        serializer = AccountEditWorkSerializer(request.data)
+        serializer = AccountEditWorkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         serializer.validate(request.data)
 
         education = Work.objects.filter(pk=self.kwargs['pk'])
