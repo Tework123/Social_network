@@ -31,13 +31,13 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class AccountEditSerializer(serializers.ModelSerializer):
 
-    def validate(self, attrs):
-        attrs._mutable = True
-
-        if not attrs['date_of_birth']:
-            attrs['date_of_birth'] = None
-
-        return attrs
+    # def validate(self, attrs):
+    #     attrs._mutable = True
+    #
+    #     if not attrs['date_of_birth']:
+    #         attrs['date_of_birth'] = None
+    #
+    #     return attrs
 
     class Meta:
         model = CustomUser

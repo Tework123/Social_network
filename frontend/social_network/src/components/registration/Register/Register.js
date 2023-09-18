@@ -1,12 +1,9 @@
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import axios from "../../api/axios";
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap'
+import axios from "../../../api/axios";
 
 import './register.scss';
 
 export default function Register() {
-    const div = document.createElement('div')
 
     return (
         <Formik
@@ -29,26 +26,7 @@ export default function Register() {
                     email: values.email,
                     password: values.password
                 }).then(function (response) {
-                    //alert(response.data)
-                    div.innerHTML = "<div class=\"modal fade\" id=\"confirmModal\" tabindex=\"-1\" aria-labelledby=\"exampleModalLabel\" aria-hidden=\"true\">\n" +
-                        "  <div class=\"modal-dialog\">\n" +
-                        "    <div class=\"modal-content\">\n" +
-                        "      <div class=\"modal-header\">\n" +
-                        "        <h1 class=\"modal-title fs-5\" id=\"exampleModalLabel\">Modal title</h1>\n" +
-                        "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>\n" +
-                        "      </div>\n" +
-                        "      <div class=\"modal-body\">\n" +
-                        "        {response.data}\n" +
-                        "      </div>\n" +
-                        "      <div class=\"modal-footer\">\n" +
-                        "        <button type=\"button\" class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</button>\n" +
-                        "        <button type=\"button\" class=\"btn btn-primary\">Save changes</button>\n" +
-                        "      </div>\n" +
-                        "    </div>\n" +
-                        "  </div>\n" +
-                        "</div>"
-                    document.body.append(div)
-                    //div.insertAdjacentHTML('')
+                    alert(response.data)
                     console.log(response.data)
                 }).catch(error => console.log(error))
             }}>
@@ -72,7 +50,7 @@ export default function Register() {
                                 className="password"
                             />
                             <ErrorMessage className="error" name="password" component="div"/>
-                            <button type="submit" className="register" data-bs-toggle="modal" data-bs-target="#confirmModal">Зарегистрироваться</button>
+                            <button type="submit" className="register">Зарегистрироваться</button>
                         </Form>
                 </div>
             </div>

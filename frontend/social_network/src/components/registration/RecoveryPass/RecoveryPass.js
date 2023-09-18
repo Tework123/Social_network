@@ -1,7 +1,7 @@
 import React from 'react';
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {useParams} from "react-router-dom";
-import axios from "../../api/axios";
+import axios from "../../../api/axios";
 
 const RecoveryPass = () => {
     const token = useParams()

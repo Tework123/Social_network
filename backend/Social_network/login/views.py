@@ -127,7 +127,7 @@ def activate(request, uidb64, token):
         user.save()
         login(request, user)
 
-        # return redirect('home')
+        # return redirect('Home')
         return Response(status=status.HTTP_200_OK, data='Ваш аккаунт активирован')
     else:
         return Response(status=status.HTTP_403_FORBIDDEN, data='Время жизни ссылки истекло')

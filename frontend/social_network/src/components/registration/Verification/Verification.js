@@ -1,5 +1,5 @@
-import {useParams} from "react-router-dom";
-import axios from "../../api/axios";
+import {Redirect, useParams} from "react-router-dom";
+import axios from "../../../api/axios";
 
 import './verification.scss';
 
@@ -11,6 +11,9 @@ export default function Verification () {
         .catch(res => console.log(`catch ${res}`))
 
     return (
-        <h2>Почта подтверждена</h2>
+        <>
+            <h2>Почта подтверждена</h2>
+            <Redirect to="/account/edit/"/>
+        </>
     )
 }

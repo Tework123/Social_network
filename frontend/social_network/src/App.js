@@ -1,10 +1,12 @@
-import {Route,BrowserRouter as Router, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
-import Register from "./components/Register/Register";
-import Login from "./components/Login/Login";
-import Verification from "./components/Verification/Verification";
-import RecoveryPassEmail from "./components/RecoveryPassEmail/RecoveryPassEmail";
-import RecoveryPass from "./components/RecoveryPass/RecoveryPass";
+import Register from "./components/registration/Register/Register";
+import Login from "./components/registration/Login/Login";
+import Verification from "./components/registration/Verification/Verification";
+import RecoveryPassEmail from "./components/registration/RecoveryPassEmail/RecoveryPassEmail";
+import RecoveryPass from "./components/registration/RecoveryPass/RecoveryPass";
+import Home from "./components/Home/Home";
+import FormEditProfile from "./components/FormEditProfile/FormEditProfile";
 function App() {
 
     return (
@@ -23,13 +25,19 @@ function App() {
                     <Route path="/login/reset_password">
                         <RecoveryPassEmail/>
                     </Route>
+                     <Route path="/account/edit">
+                        <FormEditProfile/>
+                    </Route>
+                    <Route path="/:userId">
+                        <Home/>
+                    </Route>
                     <Route path="/">
                         <Login/>
                     </Route>
                 </Switch>
             </div>
         </Router>
-  );
+  )
 }
 
 export default App;
