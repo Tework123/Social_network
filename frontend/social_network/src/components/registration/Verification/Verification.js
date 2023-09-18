@@ -1,7 +1,7 @@
 import {useParams} from "react-router-dom";
 import axios from "../../api/axios";
 
-import './verification.scss'
+import './verification.scss';
 
 export default function Verification () {
     const token = useParams()

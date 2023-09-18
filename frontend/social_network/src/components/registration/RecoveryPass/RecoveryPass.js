@@ -1,11 +1,10 @@
 import React from 'react';
+import {ErrorMessage, Field, Form, Formik} from "formik";
 import {useParams} from "react-router-dom";
 import axios from "../../api/axios";
-import {ErrorMessage, Field, Form, Formik} from "formik";
 
 const RecoveryPass = () => {
     const token = useParams()
-    //console.log(token)
 
     axios.get(`/api/v1/login/reset_password/${token.uidb64}/${token.token}/`)
         .then(res => console.log(`then ${res.data}`))
