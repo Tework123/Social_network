@@ -1,17 +1,22 @@
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from album.models import Album, Photo
+from album.permissions import IsAlbumCreator
 from album.serializers import AlbumListSerializer, PhotoListSerializer, PhotoDetailSerializer, \
     PhotoChangeDetailSerializer, AlbumEditSerializer
 
 
 class AlbumListView(generics.ListCreateAPIView):
-    """Возвращает все альбомы по id юзера"""
+    """Показывает все альбомы пользователя вместе с первым фото каждого,
+     создает альбом"""
     serializer_class = AlbumListSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Album.objects.filter(pk=self.kwargs['pk'])
+        return (Album.objects.filter(user=self.request.user).
+                prefetch_related('photo').order_by('date_create'))
 
     def post(self, request, *args, **kwargs):
         Album.objects.create(name=request.data['name'],
@@ -20,41 +25,52 @@ class AlbumListView(generics.ListCreateAPIView):
 
 
 class AlbumEditView(generics.RetrieveUpdateDestroyAPIView):
-    """Изменяет параметры альбома"""
+    """Изменяет название альбома"""
     serializer_class = AlbumEditSerializer
+    permission_classes = [IsAuthenticated, IsAlbumCreator]
 
-    # get не нужен здесь
-    def get_queryset(self):
-        return Album.objects.filter(pk=self.kwargs['pk'])
+    def get_object(self):
+        return get_object_or_404(Album, pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
-        album = get_object_or_404(Album, pk=self.kwargs['pk'])
+        album = Album.objects.filter(pk=self.kwargs['pk'])
         album.update(name=request.data['name'])
         return Response(status=status.HTTP_200_OK, data='Альбом успешно изменен')
 
     def delete(self, request, *args, **kwargs):
+        album = Album.objects.filter(pk=self.kwargs['pk'])
+        if album[0].avatar_album:
+            return Response(status=status.HTTP_200_OK, data='Альбом с фото профиля нельзя удалить')
+
+        album.delete()
         return Response(status=status.HTTP_200_OK, data='Альбом успешно удален')
 
 
 class PhotoListView(generics.ListCreateAPIView):
-    """Возвращает все фото по id альбома, создает фото"""
+    """Показывает все фото по id альбома, создает фото"""
     serializer_class = PhotoListSerializer
+    permission_classes = [IsAuthenticated, IsAlbumCreator]
 
     def get_queryset(self):
-        return Photo.objects.filter(album_id=self.kwargs['pk'])
+        return Photo.objects.filter(album_photo=self.kwargs['pk']).order_by('-date_create')
 
     def post(self, request, *args, **kwargs):
         serializer = PhotoListSerializer(request.data)
         serializer.validate(request.data)
 
-        Photo.objects.create(image=request.data['image'],
-                             text=request.data['text'],
-                             album_id=self.kwargs['pk'])
+        photo = Photo.objects.create(image=request.data['image'],
+                                     text=request.data['text'],
+                                     user=self.request.user)
+
+        album = get_object_or_404(Album, id=self.kwargs['pk'])
+        album.photo.add(photo)
+
         return Response(status=status.HTTP_201_CREATED, data='Фото успешно добавлено')
 
 
-class PhotoDetailView(viewsets.ViewSet):
-    """Показывает, изменяет, удаляет фото по указанному id фотографии"""
+class PhotoEditView(viewsets.ViewSet):
+    """Показывает, изменяет, удаляет фото по id фотографии"""
+    permission_classes = [IsAuthenticated, IsAlbumCreator]
 
     def get(self, request, pk=None):
         photo = get_object_or_404(Photo, pk=pk)
