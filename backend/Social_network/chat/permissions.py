@@ -24,6 +24,15 @@ class IsChatUser(permissions.BasePermission):
                                            queryset=CustomUser.objects.filter(
                                                id=request.user.id))))
 
+
+        #chat = get_or_404
+        # починить, наверное надо везде поменять на get_or_404, чтобы выдавало ошибку
+        # когда нет сущности, а не пыталось получить к ней доступ
+        print(chat)
+        print(chat)
+        print(chat)
+        print(chat)
+
         if request.user in chat[0].user.all():
             return True
         # если тут блокируем get, то блокируется все остальные запросы
@@ -58,10 +67,10 @@ class IsChatUserDetail(permissions.BasePermission):
 
         return False
 
-    # для всех запросов, кроме post и get
-    def has_object_permission(self, request, view, obj):
 
-        return True
+# для всех запросов, кроме post и get
+def has_object_permission(self, request, view, obj):
+    return True
 
 
 class IsRelationshipUser(permissions.BasePermission):

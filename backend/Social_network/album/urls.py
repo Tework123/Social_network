@@ -13,6 +13,6 @@ urlpatterns = [
     path('photos/<int:pk>/', PhotoListView.as_view()),
 
     # показывает фото альбома, изменяет(текст), удаляет его(требуется pk фото)
-    path('photo/<int:pk>/', PhotoEditView.as_view({'get': 'get', 'put': 'put', 'delete': 'delete'})),
+    path('photo/<int:pk>/', PhotoEditView.as_view()),
 
 ]

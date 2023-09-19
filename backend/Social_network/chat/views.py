@@ -20,17 +20,33 @@ class ChatListView(generics.ListCreateAPIView):
     serializer_class = ChatListSerializer
     permission_classes = [IsAuthenticated]
 
+    # def get_serializer_context(self):
+    #     print(5)
+    #     return {
+    #         'request': self.request
+    #     }
+
+    # def get_serializer(self, *args, **kwargs):
+    #     print(4)
+    #     serializer_class = self.get_serializer_class()
+    #     kwargs['context'] = self.get_serializer_context()
+    #     return serializer_class(*args, **kwargs)
+
     def get_queryset(self):
-        return Chat.objects.filter(user=self.request.user)
+        return Chat.objects.filter(user=self.request.user).prefetch_related('user')
 
     def post(self, request, *args, **kwargs):
+        # print(1)
+        serializer = ChatListSerializer(data=request.data, context={'user': self.request.user})
+        serializer.validate(request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # print(3)
         chat = Chat.objects.create(name=request.data['name'], open_or_close=True)
 
-        # в дополнениях к запросу отправить список юзеров? Просто запрос будет на relationship
-        # нужна отдельная урл на запрос друзей получается, where status = friend
-        # на фронте помечаешь нужных, отправляешь post запрос сюда
-        # на фронте все равно не будет списка, как здесь в rest
-        for user in request.data.getlist('user'):
+        users = request.data['user']
+        users.insert(0, self.request.user.id)
+        for user in users:
             chat.user.add(user)
 
         return Response(status=status.HTTP_201_CREATED, data='Беседа создана успешно')
@@ -44,7 +60,10 @@ class ChatEditView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         return get_object_or_404(Chat.objects.prefetch_related('user'), pk=self.kwargs['pk'])
 
+    # потом наверное немного по другому придется удалять и добавлять пользователей в беседу
     def put(self, request, *args, **kwargs):
+        serializer = ChatEditSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         chat = Chat.objects.filter(pk=self.kwargs['pk'])
 
         chat.update(name=request.data['name'])
@@ -52,7 +71,8 @@ class ChatEditView(generics.RetrieveUpdateDestroyAPIView):
         # удаляем все прикрепленные many_to_many objects
         chat[0].user.clear()
 
-        for user in request.data.getlist('user'):
+        users = request.data['user']
+        for user in users:
             chat[0].user.add(user)
 
         return Response(status=status.HTTP_200_OK, data='Беседа успешно изменена')
