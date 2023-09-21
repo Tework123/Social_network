@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import NavBar from "../NavBar/NavBar";
 import {Col, Container, Row, Form, FormControl, Button} from "react-bootstrap";
 import {useFormik} from "formik";
@@ -7,8 +7,11 @@ import * as Yup from 'yup';
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import './formEditProfile.scss'
+import {Redirect} from "react-router-dom";
 
 const FormEditProfile = () => {
+    const [success, setSuccess] = useState(false)
+
     const formik = useFormik({
         initialValues: {
             firstName: '',
@@ -35,7 +38,10 @@ const FormEditProfile = () => {
                 date_of_birth: values.dateOfBirth,
                 lifestyle: values.lifestyle,
                 interest: values.interest
-            }).then(response => console.log(response.data))
+            }).then(function (response) {
+                console.log(response.data)
+                setSuccess(true)
+            })
                 .catch(error => console.log(error))
         }
     })
@@ -43,7 +49,13 @@ const FormEditProfile = () => {
     return (
         <>
             <NavBar/>
-            <Container>
+            {success ? (
+                <section>
+                    <Redirect to="im"/>
+                </section>
+            ): (
+                <section>
+                    <Container>
                 <h2>Редактирование профиля</h2>
                 <Form noValidate onSubmit={formik.handleSubmit}>
                     <Row className="mb-3">
@@ -138,6 +150,8 @@ const FormEditProfile = () => {
                     <Button type="submit">Сохранить изменения</Button>
                 </Form>
             </Container>
+                </section>
+            )}
         </>
     );
 };

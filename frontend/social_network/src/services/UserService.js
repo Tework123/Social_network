@@ -1,8 +1,8 @@
 import axios from "../api/axios";
 
 const _apiBase = 'http://127.0.0.1:8000/api/v1/'
-export const getUser = async (id) => {
-    const res = await axios.get(`${_apiBase}account/im/${id}/`)
+export const getUser = async () => {
+    const res = await axios.get(`${_apiBase}account/im/`)
     return _transformUser(res.data)
 }
 

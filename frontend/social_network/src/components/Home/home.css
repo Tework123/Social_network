@@ -11,8 +11,9 @@ main {
 }
 
 .wrapper_col2 {
-  width: 300px;
+  width: 306px;
   height: 440px;
+  border-radius: 10px;
   background-color: white;
 }
 .wrapper_col2 .avatar {
@@ -29,6 +30,7 @@ main {
 
 .wrapper_col3 {
   background-color: white;
+  border-radius: 10px;
   width: 746px;
   height: 450px;
 }

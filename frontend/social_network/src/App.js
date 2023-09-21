@@ -28,7 +28,7 @@ function App() {
                      <Route path="/account/edit">
                         <FormEditProfile/>
                     </Route>
-                    <Route path="/:userId">
+                    <Route path="/account/im">
                         <Home/>
                     </Route>
                     <Route path="/">

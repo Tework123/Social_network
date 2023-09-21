@@ -4,119 +4,26 @@
 }
 
 body {
-  background-color: rgb(237 238 240);
+  background-color: #f2f2f3;
 }
 
-.parent {
+.login_form {
+  background-color: white;
+  border-radius: 10px;
+}
+
+.btn_login {
   width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  overflow: auto;
-  .block {
-    width: 450px;
-    min-height: 570px;
-    position: absolute;
-    top: 30%;
-    left: 45%;
-    margin: -125px 0 0 -125px;
-    background-color: #fff;
-    border-radius: 10px;
-    h2 {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .label {
-      &_email {
-        display: block;
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
-      &_pass {
-        display: block;
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-        margin-top: 8px;
-      }
-    }
-    .error {
-      color: #e53e3e;
-      margin-top: 5px;
-      text-align: center;
-      font-size: 16px;
-    }
-    .email {
-      display: block;
-      margin: 0 auto;
-      width: 273px;
-      height: 40px;
-      border-radius: 7px;
-      background: rgb(240 242 245);
-    }
-    .password {
-      display: block;
-      margin: 7px auto 0 auto;
-      width: 273px;
-      height: 40px;
-      border-radius: 7px;
-      background: rgb(240 242 245);
-    }
-    .checkbox {
-      display: block;
-      text-align: center;
-      margin-top: 25px;
-      cursor: pointer;
-      font-size: 16px;
-      span {
-        margin-left: 5px;
-      }
-    }
-    .button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 11px auto 0 auto;
-      width: 273px;
-      height: 40px;
-      color: white;
-      border-radius: 7px;
-      font-size: 16px;
-      background: rgb(0 119 255);
-      cursor: pointer;
-      &_register {
-        margin-top: 18px;
-        background-color: rgb(75 179 75);
-        text-decoration: none;
-      }
-    }
-    .divider {
-      margin: 30px auto 7px auto;
-      width: 273px;
-      height: .5px;
-      background-color: #000;
-    }
-    .forget {
-      display: block;
-      color: #000;
-      text-align: center;
-      font-size: 16px;
-      font-weight: 400;
-      text-decoration: none;
-    }
-    .google {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 20px auto 0 auto;
-      width: 273px;
-      height: 40px;
-      font-size: 16px;
-      border-radius: 7px;
-      background: rgb(240 242 245);
-    }
-  }
+  margin-bottom: 5px;
+}
+
+.btn_reg {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.error_msg {
+  margin-top: 3px;
+  font-size: 14px;
+  color: red;
 }

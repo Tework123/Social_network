@@ -1,23 +1,22 @@
 import React, {useEffect, useState} from 'react';
-import {Container, Nav, Row, Col, Image} from "react-bootstrap";
-import {Link, useParams} from "react-router-dom"
-import 'bootstrap/dist/css/bootstrap.min.css'
+import {Link} from "react-router-dom"
 import NavBar from "../NavBar/NavBar";
-import axios from "axios";
+import {getUser} from "../../services/UserService";
+import {Container, Nav, Row, Col, Image} from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 import './home.scss'
-import {getUser} from "../../services/UserService";
 
 const Home = () => {
     const [user, setUser] = useState('')
-    const {userId} = useParams()
+
 
     useEffect(() => {
         updateUser()
-    }, [userId])
+    }, [])
 
     const updateUser = () => {
-        getUser(userId).then(userLoad)
+        getUser().then(userLoad)
     }
     const userLoad = (user) => {
         setUser(user)
@@ -31,10 +30,10 @@ const Home = () => {
           <Container>
               <Row>
                   <Col>
-                      <Nav defaultActiveKey="/home" className="flex-column">
-                      <Nav.Link href="/home">Моя страница</Nav.Link>
+                      <Nav defaultActiveKey="/account/im" className="flex-column">
+                      <Nav.Link href="/account/im">Моя страница</Nav.Link>
                       <Nav.Link href="/feed">Новости</Nav.Link>
-                      <Nav.Link href="/im">Мессенджер</Nav.Link>
+                      <Nav.Link href="/chat">Мессенджер</Nav.Link>
                       <Nav.Link href="/friends">Друзья</Nav.Link>
                       <Nav.Link href="/groups">Сообщества</Nav.Link>
                       <Nav.Link href="/albums">Фотографии</Nav.Link>
@@ -43,7 +42,7 @@ const Home = () => {
                   <Col className="pt-3" xs = {3}>
                       <div className="wrapper_col2">
                         <div className="avatar">
-                            <Image src="avatar.jpg" fluid rounded />
+                            <Image src="avatar.jpg" fluid rounded alt="avatar"/>
                         </div>
                           <Link to="/account/edit" className="btn btn_edit" type="button">Редактировать профиль</Link>
                       </div>
