@@ -22,7 +22,6 @@ urlpatterns = [
 
     # встроенная авторизация
     # path('api/v1/auth/', include('rest_framework.urls')),
-
 ]
 
 # swagger

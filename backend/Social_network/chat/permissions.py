@@ -5,7 +5,10 @@
 # изменение сообщений в чате - доступ создателя
 # для mock сообщения - как для обычного скорее всего
 from django.db.models import Prefetch
-from rest_framework import permissions
+from rest_framework import permissions, status
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+
 from account.models import CustomUser
 from chat.models import Chat, Message, Relationship
 
@@ -17,23 +20,14 @@ class IsChatUser(permissions.BasePermission):
     # для всех запросов, в том числе и post
     # не используем для проверки print здесь
     def has_permission(self, request, view):
-        # 18 sql query nice
-        # select_related для fk
-        chat = (Chat.objects.filter(pk=view.kwargs['pk'])
-                .prefetch_related(Prefetch('user',
-                                           queryset=CustomUser.objects.filter(
-                                               id=request.user.id))))
+        # chat = (Chat.objects.filter(pk=view.kwargs['pk'])
+        #         .prefetch_related(Prefetch('user',
+        #                                    queryset=CustomUser.objects.filter(
+        #                                        id=request.user.id))))
 
+        chat = get_object_or_404(Chat.objects.prefetch_related('user'), pk=view.kwargs['pk'])
 
-        #chat = get_or_404
-        # починить, наверное надо везде поменять на get_or_404, чтобы выдавало ошибку
-        # когда нет сущности, а не пыталось получить к ней доступ
-        print(chat)
-        print(chat)
-        print(chat)
-        print(chat)
-
-        if request.user in chat[0].user.all():
+        if request.user in chat.user.all():
             return True
         # если тут блокируем get, то блокируется все остальные запросы
 
@@ -47,6 +41,8 @@ class IsChatUser(permissions.BasePermission):
         return True
 
 
+# зачем это?
+# надо диалоги переделать, потом тесты и селери
 class IsChatUserDetail(permissions.BasePermission):
     SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
     CREATE_METHODS = ['POST']
@@ -94,14 +90,8 @@ class IsMessageCreator(permissions.BasePermission):
     CREATE_METHODS = ['POST']
 
     def has_permission(self, request, view):
-        message = Message.objects.filter(pk=view.kwargs['pk'], user=request.user)
-        if message:
-            return True
-
-        return False
+        get_object_or_404(Message, pk=view.kwargs['pk'], user=request.user)
+        return True
 
     def has_object_permission(self, request, view, obj):
-        # if obj.user == request.user:
-        #     return True
-
         return True

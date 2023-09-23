@@ -99,6 +99,9 @@ class MessageChatListView(viewsets.ModelViewSet):
 
     # здесь нужен put для обновления поля mock = False
     def put(self, request, *args, **kwargs):
+        serializer = MessageChatCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         message = Message.objects.filter(user=self.request.user,
                                          chat_id=self.kwargs['pk'], mock=True)
         message.update(mock=False, text=request.data['text'], date_create=timezone.now())
@@ -127,11 +130,15 @@ class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
         return mock_message
 
     def put(self, request, *args, **kwargs):
+        serializer = MessageMockChatSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         mock_message = Message.objects.get(user=self.request.user,
                                            chat_id=self.kwargs['pk'], mock=True)
 
         mock_message.photo.clear()
-        photos = request.data.getlist('photo')
+
+        # здесь нужны id уже сохраненных на сервере photo
+        photos = request.data['photo']
         for photo in photos:
             mock_message.photo.add(photo)
 
@@ -140,8 +147,13 @@ class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
 
 class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
     """Показывает, изменяет, удаляет одно сообщение(требуется id сообщения)"""
-    serializer_class = MessageChatEditSerializer
     permission_classes = [IsAuthenticated, IsMessageCreator]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MessageChatListSerializer
+        else:
+            return MessageChatEditSerializer
 
     def get_object(self):
         # достать еще все фото с новым сериализатором
@@ -149,17 +161,12 @@ class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
                                  pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
+        serializer = MessageChatEditSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         message = Message.objects.filter(pk=self.kwargs['pk'])
 
-        # Когда фронт возвращает выбранные фото пользователем, тогда приходит словарь,
-        # а не QueryDict django(из граф. интерфейса),
-        # поэтому нужны преобразования: уже без getlist
-        if type(request.data) is dict:
-            query_dict = QueryDict('', mutable=True)
-            query_dict.update(request.data)
-            photos = query_dict['photo']
-        else:
-            photos = request.data.getlist('photo')
+        photos = request.data['photo']
 
         message[0].photo.clear()
         for photo in photos:

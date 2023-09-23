@@ -8,6 +8,7 @@ from chat.models import Chat, Relationship, Message
 class ChatListSerializer(serializers.ModelSerializer):
     message = serializers.SerializerMethodField('last_message')
 
+    # Чтобы показать последнее сообщения каждого чата, нужно делать дополнительный запрос
     def last_message(self, obj):
         # print(3)
         last_message = Message.objects.filter(chat_id=obj.pk).prefetch_related(
@@ -50,18 +51,29 @@ class MessageChatCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'text']
+        extra_kwargs = {
+            'id': {'required': True},
+            'text': {'required': True}, }
 
 
 class MessageChatEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'date_create', 'date_change', 'photo']
+        fields = ['id', 'text', 'photo']
+        extra_kwargs = {
+            'id': {'required': True},
+            'text': {'required': True},
+            'photo': {'required': True},
+        }
 
 
 class MessageMockChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'photo']
+        extra_kwargs = {
+            'id': {'required': True},
+            'photo': {'required': True}, }
 
 
 # dialogs
