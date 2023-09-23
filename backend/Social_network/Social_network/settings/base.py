@@ -47,10 +47,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     # debug panel
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+
     # cors
     'corsheaders.middleware.CorsMiddleware',
+
+    # date_last_visit
+    'middleware.FilterIPMiddleware'
 
 ]
 

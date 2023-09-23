@@ -11,19 +11,19 @@ from album.models import Album, Photo
 
 
 class AccountView(generics.RetrieveAPIView):
-    """Показывает информация о пользователе"""
+    """Показывает информацию о пользователе"""
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticated]
 
+    # не могу вытащить relationship, потому что там user_1, а не user
+    # альбомы будет сложно подцепить, да и нужно ли это
+    # надо подцепить посты и группы
     def get_object(self):
         return get_object_or_404(CustomUser.objects
-                                 .prefetch_related('education', 'work', 'groups'),
+                                 .prefetch_related('education', 'work'),
                                  id=self.request.user.id)
 
 
-# надо попробовать написать свою вьюапи и сериализатор и вытащить все про пользователя
-# также его друзей(relationships), группы(communa), еще посты, а лучше все сделать через
-# дженерики)
 class AccountEditView(generics.RetrieveUpdateAPIView):
     """Обновляет основные текстовые поля пользователя"""
     serializer_class = AccountEditSerializer

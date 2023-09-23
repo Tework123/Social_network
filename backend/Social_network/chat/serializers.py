@@ -96,10 +96,3 @@ class RelationshipEditSerializer(serializers.ModelSerializer):
         fields = ['status']
         extra_kwargs = {
             'status': {'required': True}, }
-
-
-# dialogs message
-class MessageRelationshipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Message
-        fields = ['id', 'text', 'date_create', 'date_change', 'user', 'mock', 'photo']
