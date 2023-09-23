@@ -23,7 +23,7 @@ urlpatterns = [
     ########
     # диалоги
     # показывает все диалоги, создает диалог
-    path('dialogs/', RelationshipListView.as_view({'get': 'list', 'post': 'post'})),
+    path('dialogs/', RelationshipListView.as_view()),
 
     # изменяет диалог по pk
     path('dialogs/<int:pk>/', RelationshipEditView.as_view()),

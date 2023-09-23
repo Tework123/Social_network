@@ -1,6 +1,4 @@
 from rest_framework import serializers, exceptions
-
-from album.models import Photo
 from chat.models import Chat, Relationship, Message
 
 
@@ -86,13 +84,18 @@ class RelationshipListSerializer(serializers.ModelSerializer):
 class RelationshipCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Relationship
-        fields = ['id', 'user_2', 'status']
+        fields = ['user_2', 'status']
+        extra_kwargs = {
+            'user_2': {'required': True},
+            'status': {'required': True}, }
 
 
 class RelationshipEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Relationship
-        fields = ['id', 'status']
+        fields = ['status']
+        extra_kwargs = {
+            'status': {'required': True}, }
 
 
 # dialogs message
@@ -100,21 +103,3 @@ class MessageRelationshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'text', 'date_create', 'date_change', 'user', 'mock', 'photo']
-
-
-class MessageRelationshipCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Message
-        fields = ['id', 'text']
-
-
-class MessageRelationshipEditSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Message
-        fields = ['id', 'text', 'date_change', 'photo']
-
-
-class MessageMockRelationshipSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Message
-        fields = ['id', 'photo']

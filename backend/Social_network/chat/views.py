@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.http import QueryDict
 from django.utils import timezone
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import get_object_or_404
@@ -156,7 +155,6 @@ class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
             return MessageChatEditSerializer
 
     def get_object(self):
-        # достать еще все фото с новым сериализатором
         return get_object_or_404(Message.objects.prefetch_related('photo'),
                                  pk=self.kwargs['pk'])
 
@@ -181,16 +179,16 @@ class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
 
 
 # Relationship
-class RelationshipListView(viewsets.ModelViewSet):
+class RelationshipListView(generics.ListCreateAPIView):
     """Показывает все отношения, создает отношения"""
 
-    serializer_classes = {'list': RelationshipListSerializer,
-                          'post': RelationshipCreateSerializer}
-    default_serializer_class = RelationshipListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
-        return self.serializer_classes.get(self.action, self.default_serializer_class)
+        if self.request.method == "GET":
+            return RelationshipListSerializer
+        else:
+            return RelationshipCreateSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -198,6 +196,8 @@ class RelationshipListView(viewsets.ModelViewSet):
 
     # создать отношение - начать переписку с любым пользователем
     def post(self, request, *args, **kwargs):
+        serializer = RelationshipCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         user = self.request.user
 
         # нужна будет кнопка для создания отношения в профиле каждого человека,
@@ -229,6 +229,9 @@ class RelationshipEditView(generics.RetrieveUpdateDestroyAPIView):
                                  select_related('user_1', 'user_2'), pk=self.kwargs['pk'])
 
     def put(self, request, *args, **kwargs):
+        serializer = RelationshipEditSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         relationship = Relationship.objects.filter(pk=self.kwargs['pk'])
         relationship.update(status=request.data['status'])
         return Response(status=status.HTTP_200_OK, data='Отношения с пользователем изменены')
@@ -242,8 +245,8 @@ class RelationshipEditView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class MessageRelationshipListView(viewsets.ModelViewSet):
-    """Показывает все сообщения одного диалога,
-     отправляет созданное сообщение(требуется id диалога)"""
+    """Показывает все сообщения одного отношения,
+     отправляет созданное сообщение(требуется id отношения)"""
 
     serializer_classes = {'list': MessageChatListSerializer,
                           'put': MessageChatCreateSerializer}
@@ -255,10 +258,12 @@ class MessageRelationshipListView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return (Message.objects.filter(relationship__pk=self.kwargs['pk'], mock=False)
-                .order_by('-date_create'))
+                .prefetch_related('photo').order_by('-date_create'))
 
-    # здесь нужен put для обновления поля mock = False
     def put(self, request, *args, **kwargs):
+        serializer = MessageChatCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         message = Message.objects.filter(user=self.request.user,
                                          relationship_id=self.kwargs['pk'], mock=True)
         message.update(mock=False, text=request.data['text'], date_create=timezone.now())
@@ -289,11 +294,14 @@ class MessageCreateMockRelationshipView(generics.RetrieveUpdateDestroyAPIView):
         return mock_message
 
     def put(self, request, *args, **kwargs):
+        serializer = MessageMockChatSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         mock_message = Message.objects.get(user=self.request.user,
                                            relationship_id=self.kwargs['pk'], mock=True)
 
         mock_message.photo.clear()
-        photos = request.data.getlist('photo')
+
+        photos = request.data['photo']
         for photo in photos:
             mock_message.photo.add(photo)
 
