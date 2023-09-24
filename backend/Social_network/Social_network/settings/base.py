@@ -39,6 +39,10 @@ INSTALLED_APPS = [
 ]
 AUTH_USER_MODEL = 'account.CustomUser'
 
+# авторизация в тестах работает и без него
+# AUTHENTICATION_BACKENDS = ['login.models.EmailBackend']
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

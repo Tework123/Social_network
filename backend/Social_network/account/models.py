@@ -52,8 +52,8 @@ class Work(models.Model):
     name = models.CharField(max_length=50, blank=False)
     city = models.CharField(max_length=30, blank=True)
     status = models.CharField(max_length=30, blank=True)
-    date_start = models.DateField(null=True, blank=True)
-    date_stop = models.DateField(null=True, blank=True)
+    date_start = models.DateField(null=True, blank=True, default=None)
+    date_stop = models.DateField(null=True, blank=True, default=None)
     user = models.ForeignKey(CustomUser, related_name='work', on_delete=models.CASCADE)
 
     def __str__(self):

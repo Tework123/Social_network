@@ -97,7 +97,7 @@ class AccountEditWorkSerializer(serializers.ModelSerializer):
         #
         # if not attrs['date_start']:
         #     attrs['date_start'] = None
-        #
+        # #
         # if not attrs['date_stop']:
         #     attrs['date_stop'] = None
 

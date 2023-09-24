@@ -102,8 +102,8 @@ class AuthUserView(CreateAPIView):
                 user = CustomUser.objects.create_user(email=self.request.data['email'],
                                                       password=self.request.data['password'],
                                                       is_active=True)
-
-            user = authenticate(email=user.email, password=request.data['password'])
+            user = authenticate(email=user.email,
+                                password=request.data['password'])
             login(request, user)
 
             return Response(status=status.HTTP_200_OK,
@@ -111,6 +111,7 @@ class AuthUserView(CreateAPIView):
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
         user = authenticate(email=user.email, password=request.data['password'])
+
         if user is None:
             return Response(status=status.HTTP_403_FORBIDDEN,
                             data='Данные для авторизации неправильные')
