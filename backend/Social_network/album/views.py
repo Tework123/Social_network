@@ -47,7 +47,7 @@ class AlbumEditView(generics.RetrieveUpdateDestroyAPIView):
                             data='Альбом с фото профиля нельзя переименовать')
 
         album.update(name=request.data['name'])
-        return Response(status=status.HTTP_403_FORBIDDEN, data='Альбом успешно изменен')
+        return Response(status=status.HTTP_200_OK, data='Альбом успешно изменен')
 
     def delete(self, request, *args, **kwargs):
         album = Album.objects.filter(pk=self.kwargs['pk'])
