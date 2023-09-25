@@ -6,7 +6,7 @@ from album.models import Album, Photo
 from album.permissions import IsAlbumCreator
 from album.serializers import (AlbumListSerializer, PhotoListSerializer,
                                PhotoEditGetSerializer,
-                               PhotoEditPutSerializer, AlbumEditSerializer)
+                               PhotoEditPutSerializer, AlbumEditSerializer, PhotoCreateSerializer)
 
 
 class AlbumListView(generics.ListCreateAPIView):
@@ -60,8 +60,13 @@ class AlbumEditView(generics.RetrieveUpdateDestroyAPIView):
 
 class PhotoListView(generics.ListCreateAPIView):
     """Показывает все фото по id альбома, создает фото"""
-    serializer_class = PhotoListSerializer
     permission_classes = [IsAuthenticated, IsAlbumCreator]
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return PhotoListSerializer
+        else:
+            return PhotoCreateSerializer
 
     def get_queryset(self):
         return Photo.objects.filter(album_photo=self.kwargs['pk']).order_by('-date_create')
@@ -106,5 +111,10 @@ class PhotoEditView(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, *args, **kwargs):
         photo = get_object_or_404(Photo, pk=self.kwargs['pk'])
+
+        # удаляет только фото из файлового хранилища
+        photo.image.delete(save=True)
+
+        # удаляет только ссылку на фото из базы данных
         photo.delete()
         return Response(status=status.HTTP_200_OK, data='Фото удалено успешно')

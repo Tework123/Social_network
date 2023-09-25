@@ -16,6 +16,12 @@ class AlbumListSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'photo']
 
 
+class AlbumEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = ['id', 'name']
+
+
 class PhotoListSerializer(serializers.ModelSerializer):
     # def validate(self, attrs):
     #     attrs._mutable = True
@@ -30,10 +36,10 @@ class PhotoListSerializer(serializers.ModelSerializer):
         fields = ['id', 'image', 'text', 'date_create']
 
 
-class AlbumEditSerializer(serializers.ModelSerializer):
+class PhotoCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Album
-        fields = ['id', 'name']
+        model = Photo
+        fields = ['image', 'text']
 
 
 class PhotoEditGetSerializer(serializers.ModelSerializer):
@@ -45,7 +51,7 @@ class PhotoEditGetSerializer(serializers.ModelSerializer):
 class PhotoEditPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['id', 'text']
+        fields = ['text']
         extra_kwargs = {
             'text': {'required': True},
         }

@@ -19,14 +19,14 @@ class AlbumViewTest(TestCase):
         user = CustomUser.objects.create_user(email='user@mail.ru',
                                               password='user@mail.ru', is_active=True)
 
-        for i in range(3):
+        for _ in range(3):
             album_name = fake.name()
             Album.objects.create(name=album_name, user=user)
 
         first_album = Album.objects.get(pk=1)
 
         # Загружаем фото и цепляем их к альбому
-        for i in range(2):
+        for _ in range(2):
             photo_text = fake.name()
             with open(absolute_path, 'rb') as new_image:
                 photo = SimpleUploadedFile(absolute_path, new_image.read())
@@ -90,17 +90,16 @@ class AlbumViewTest(TestCase):
         # возможно пригодится для видео и файлов
         # photo = SimpleUploadedFile(absolute_path, b"file_content", content_type="image/jpeg")
         #
-        # for i in range(2):
+        # for _ in range(2):
         #     photo_text = fake.name()
         #
         #     response = self.client.post('/api/v1/album/photos/1/',
         #                                 data={'image': photo,
         #                                       'text': photo_text,
-        #                                       'user': self.get_user().id
         #                                       }, )
         #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         #     self.assertEqual(response.data, 2)
-        for i in range(2):
+        for _ in range(2):
             with open(absolute_path, 'rb') as new_image:
                 photo = SimpleUploadedFile(absolute_path, new_image.read())
                 photo_text = fake.name()
@@ -108,14 +107,34 @@ class AlbumViewTest(TestCase):
                 response = self.client.post('/api/v1/album/photos/1/',
                                             data={'image': photo,
                                                   'text': photo_text,
-                                                  'user': self.get_user().id
                                                   }, )
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 self.assertEqual(response.data, 'Фото успешно добавлено')
 
+        # очистка файловой системы от добавленных в данном тесте фото
+        photos = Photo.objects.filter(album_photo__pk=1)
+        for photo in photos[2:]:
+            photo.image.delete(save=True)
+            photo.delete()
+
     def test_photo_edit(self):
-        pass
-        # доделать тесты здесь и в чате...
+
+        response = self.client.put('/api/v1/album/photo/1/',
+                                   data={
+                                       'text': '',
+                                   }, content_type="application/json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, 'Фото изменено успешно')
 
     def test_photo_delete(self):
-        pass
+        for i in range(2):
+            response = self.client.delete(f'/api/v1/album/photo/{i + 1}/')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+            response = self.client.get(f'/api/v1/album/photo/{i + 1}/')
+            self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.get(f'/api/v1/album/photos/1/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)

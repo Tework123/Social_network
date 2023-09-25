@@ -36,6 +36,7 @@ class ChatListView(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         # print(1)
+        # чтобы создатель автоматически добавлялся в чат
         serializer = ChatListSerializer(data=request.data, context={'user': self.request.user})
         serializer.validate(request.data)
         serializer.is_valid(raise_exception=True)
