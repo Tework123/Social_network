@@ -20,7 +20,6 @@ urlpatterns = [
     # mock сообщение для чата(требуется pk чата)
     path('messages_mock/<int:pk>/', MessageCreateMockChatView.as_view()),
 
-    ########
     # диалоги
     # показывает все диалоги, создает диалог
     path('dialogs/', RelationshipListView.as_view()),

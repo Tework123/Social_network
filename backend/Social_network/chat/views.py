@@ -196,6 +196,7 @@ class RelationshipListView(generics.ListCreateAPIView):
         return Relationship.objects.filter(Q(user_1=user) | Q(user_2=user))
 
     # создать отношение - начать переписку с любым пользователем
+    # кстати, отношения с самим собой (избранное в VK, надо автоматически создавать)
     def post(self, request, *args, **kwargs):
         serializer = RelationshipCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -208,7 +209,7 @@ class RelationshipListView(generics.ListCreateAPIView):
                                                          Q(user_2=user, user_1=user_2))
 
         if exist_relationship:
-            return Response(status=status.HTTP_200_OK,
+            return Response(status=status.HTTP_403_FORBIDDEN,
                             data='Этот пользователь уже связан с тобой')
 
         Relationship.objects.create(user_1=user,

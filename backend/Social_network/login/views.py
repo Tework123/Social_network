@@ -27,7 +27,7 @@ class CreateUserView(CreateAPIView):
         try:
             CustomUser.objects.get(email=request.data['email'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
-        except Exception:
+        except:
 
             user = CustomUser.objects.create_user(email=request.data['email'],
                                                   password=request.data['password'],
@@ -43,12 +43,9 @@ class CreateUserView(CreateAPIView):
 
 
 class RegisterUserTryView(CreateAPIView):
-    serializer_class = CreateUserSerializer
+    serializer_class = ResetPasswordSendEmailSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = CreateUserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
         user = get_object_or_404(CustomUser, email=request.data['email'])
         if user.is_active:
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Ваш аккаунт уже подтвержден')
@@ -66,13 +63,13 @@ class AuthUserView(CreateAPIView):
     serializer_class = AuthUserSerializer
 
     def post(self, request, *args, **kwargs):
-        # serializer = AuthUserSerializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
+        serializer = AuthUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
             try:
                 user = CustomUser.objects.get(email=request.data['email'])
-            except Exception:
+            except:
                 user = CustomUser.objects.create_user(email=self.request.data['email'],
                                                       password=self.request.data['password'],
                                                       is_active=True)
@@ -161,8 +158,9 @@ class ResetPasswordCreatePassword(APIView):
 
 
 class LogoutUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
+    def post(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK, data='Выход из аккаунта выполнен успешно')
 
