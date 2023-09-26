@@ -8,10 +8,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
         fields = ['email', 'password']
 
 
-class AuthUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['email', 'password']
+class AuthUserSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
 
 
 class ResetPasswordSendEmailSerializer(serializers.ModelSerializer):

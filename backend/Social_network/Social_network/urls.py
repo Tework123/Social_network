@@ -15,11 +15,13 @@ urlpatterns = [
     path('api/v1/community/', include('community.urls')),
     path('api/v1/post/', include('post.urls')),
 
+    # celery
+    path('api/v1/tasks/', include('tasks.urls')),
+
     path("__debug__/", include("debug_toolbar.urls")),
 
     # встроенная авторизация
     # path('api/v1/auth/', include('rest_framework.urls')),
-
 ]
 
 # swagger

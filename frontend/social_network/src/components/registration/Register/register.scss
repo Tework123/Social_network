@@ -1,0 +1,24 @@
+* {
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+body {
+  background-color: #f2f2f3;
+}
+
+.form_reg {
+  background-color: white;
+  border-radius: 10px;
+}
+
+.btn_reg {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.error_msg {
+  margin-top: 3px;
+  font-size: 14px;
+  color: red;
+}
