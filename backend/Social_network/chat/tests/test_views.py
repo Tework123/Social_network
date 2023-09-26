@@ -28,15 +28,12 @@ class ChatViewTest(TestCase):
                 photo = SimpleUploadedFile(absolute_path, new_image.read())
                 Photo.objects.create(image=photo, text=photo_text, user=test_user)
 
-        users = []
-        users.insert(0, test_user)
-
         for _ in range(3):
             email = fake.name() + '@mail.ru'
-            user = CustomUser.objects.create_user(email=email,
-                                                  password=email, is_active=True)
-            users.append(user)
+            CustomUser.objects.create_user(email=email,
+                                           password=email, is_active=True)
 
+        users = CustomUser.objects.all()
         photos = Photo.objects.all()
 
         for _ in range(3):
@@ -81,6 +78,21 @@ class ChatViewTest(TestCase):
         user = CustomUser.objects.get(email='user@mail.ru')
         return user
 
+    @staticmethod
+    def get_users_id() -> list[CustomUser]:
+        users = CustomUser.objects.all().values_list('id', flat=True)
+        return users
+
+    @staticmethod
+    def get_users() -> list[CustomUser]:
+        users = CustomUser.objects.all()
+        return users
+
+    @staticmethod
+    def get_photos() -> list[Photo]:
+        photos = Photo.objects.all().values_list('id', flat=True)
+        return photos
+
     def setUp(self) -> None:
         """Авторизует пользователя перед каждым тестом"""
 
@@ -93,10 +105,11 @@ class ChatViewTest(TestCase):
         self.assertEqual(len(response.data), 3)
 
     def test_chat_create(self):
+
         response = self.client.post('/api/v1/chat/',
                                     data={'name': 'my_chat',
                                           'open_or_close': True,
-                                          'user': [2, 3, 4]},
+                                          'user': list(self.get_users_id())},
                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -107,10 +120,11 @@ class ChatViewTest(TestCase):
         self.assertEqual(len(response.data), 4)
 
     def test_chat_edit(self):
+
         response = self.client.put('/api/v1/chat/1/',
                                    data={'name': 'my_chat1',
                                          'open_or_close': False,
-                                         'user': [2, 3]},
+                                         'user': list(self.get_users_id()[1:3])},
                                    content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -140,7 +154,7 @@ class ChatViewTest(TestCase):
 
         # прикрепляем к нему фото
         response = self.client.put('/api/v1/chat/messages_mock/1/',
-                                   data={'photo': [1, 2]},
+                                   data={'photo': list(self.get_photos())},
                                    content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Фото добавлены к сообщению')
@@ -164,18 +178,20 @@ class ChatViewTest(TestCase):
         self.assertEqual(len(response.data), 1)
 
     def test_dialog_create_already_exist(self):
+
         response = self.client.post('/api/v1/chat/dialogs/',
                                     data={'status': 'friend',
-                                          'user_2': 2},
+                                          'user_2': self.get_users()[0].id},
                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data, 'Этот пользователь уже связан с тобой')
 
     def test_dialog_create(self):
+
         response = self.client.post('/api/v1/chat/dialogs/',
                                     data={'status': 'friend',
-                                          'user_2': 3},
+                                          'user_2': self.get_users()[2].id},
                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -217,8 +233,9 @@ class ChatViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # прикрепляем к нему фото
+
         response = self.client.put('/api/v1/chat/dialogs/messages_mock/1/',
-                                   data={'photo': [1, 2]},
+                                   data={'photo': list(self.get_photos())},
                                    content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Фото добавлены к сообщению')
@@ -237,9 +254,10 @@ class ChatViewTest(TestCase):
 
     # messages
     def test_message(self):
+
         response = self.client.put('/api/v1/chat/message/1/',
                                    data={'text': fake.text(),
-                                         'photo': [1, 2, 3]},
+                                         'photo': list(self.get_photos())},
                                    content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Сообщение изменено')
