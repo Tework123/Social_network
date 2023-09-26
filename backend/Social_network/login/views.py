@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework import status, permissions
-from rest_framework.decorators import api_view, action
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.decorators import api_view
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -17,43 +16,21 @@ from django.contrib.auth import authenticate, login, logout
 
 from login.utils import account_activation_token
 
-response_schema_dict = {
-    "200": openapi.Response(
-        description="custom 200 description",
-        examples={
-            "application/json": {
-                "200_key1": "200_value_1",
-                "200_key2": "200_value_2",
-            }
-        }
-    ),
-    "205": openapi.Response(
-        description="custom 205 description",
-        examples={
-            "application/json": {
-                "205_key1": "205_value_1",
-                "205_key2": "205_value_2",
-            }
-        }
-    ),
-}
-
 
 class CreateUserView(CreateAPIView):
     serializer_class = CreateUserSerializer
 
-    @swagger_auto_schema(responses=response_schema_dict)
-    # @swagger_auto_schema(operation_description="partial_update description override", responses={404: 'slug not found'})
-    # @swagger_auto_schema(method='post', operation_description="HELLO EVERYONE")
-    @action(detail=False, methods=['post'])
     def post(self, request, *args, **kwargs):
-        try:
-            CustomUser.objects.get(email=self.request.data['email'])
-            return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
-        except Exception:
+        serializer = CreateUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-            user = CustomUser.objects.create_user(email=self.request.data['email'],
-                                                  password=self.request.data['password'],
+        try:
+            CustomUser.objects.get(email=request.data['email'])
+            return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
+        except:
+
+            user = CustomUser.objects.create_user(email=request.data['email'],
+                                                  password=request.data['password'],
                                                   is_active=False)
 
             # отправка на email
@@ -66,7 +43,7 @@ class CreateUserView(CreateAPIView):
 
 
 class RegisterUserTryView(CreateAPIView):
-    serializer_class = CreateUserSerializer
+    serializer_class = ResetPasswordSendEmailSerializer
 
     def post(self, request, *args, **kwargs):
         user = get_object_or_404(CustomUser, email=request.data['email'])
@@ -86,23 +63,26 @@ class AuthUserView(CreateAPIView):
     serializer_class = AuthUserSerializer
 
     def post(self, request, *args, **kwargs):
+        serializer = AuthUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
             try:
                 user = CustomUser.objects.get(email=request.data['email'])
-            except Exception:
+            except:
                 user = CustomUser.objects.create_user(email=self.request.data['email'],
                                                       password=self.request.data['password'],
                                                       is_active=True)
-
-            user = authenticate(email=user.email, password=request.data['password'])
+            user = authenticate(email=user.email,
+                                password=request.data['password'])
             login(request, user)
 
             return Response(status=status.HTTP_200_OK,
                             data='Авторизация тестового юзера прошла успешно')
-
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
         user = authenticate(email=user.email, password=request.data['password'])
+
         if user is None:
             return Response(status=status.HTTP_403_FORBIDDEN,
                             data='Данные для авторизации неправильные')
@@ -117,8 +97,6 @@ def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = get_object_or_404(CustomUser, pk=uid)
-
-
     except (TypeError, ValueError, OverflowError):
         user = None
     if user is not None and account_activation_token.check_token(user, token):
@@ -126,8 +104,6 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-
-        # return redirect('home')
         return Response(status=status.HTTP_200_OK, data='Ваш аккаунт активирован')
     else:
         return Response(status=status.HTTP_403_FORBIDDEN, data='Время жизни ссылки истекло')
@@ -172,15 +148,8 @@ class ResetPasswordCreatePassword(APIView):
 
         if user is None and not account_activation_token.check_token(user, token):
             return Response(status=status.HTTP_403_FORBIDDEN, data='Время жизни ссылки истекло')
+
         user = get_object_or_404(CustomUser, email=user.email)
-        # print(self.request.data['confirm_password'])
-
-        # if self.request.data['password'] != self.request.data['confirm_password']:
-        #     return Response({
-        #         'status': 400,
-        #         'message': 'Введенные пароли не совпадают',
-        #     })
-
         user.set_password(serializer.data['password'])
         user.save()
 
@@ -188,8 +157,9 @@ class ResetPasswordCreatePassword(APIView):
 
 
 class LogoutUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
+    def post(self, request):
         logout(request)
         return Response(status=status.HTTP_200_OK, data='Выход из аккаунта выполнен успешно')
 

@@ -29,15 +29,19 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # apps
-    'login.apps.LoginConfig',
     'account.apps.AccountConfig',
-    'post.apps.PostConfig',
     'album.apps.AlbumConfig',
-    'community.apps.CommunityConfig',
     'chat.apps.ChatConfig',
+    'community.apps.CommunityConfig',
+    'login.apps.LoginConfig',
+    'post.apps.PostConfig',
     'tasks.apps.TasksConfig'
 ]
 AUTH_USER_MODEL = 'account.CustomUser'
+
+# авторизация в тестах работает и без него
+# AUTHENTICATION_BACKENDS = ['login.models.EmailBackend']
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,10 +51,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     # debug panel
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+
     # cors
     'corsheaders.middleware.CorsMiddleware',
+
+    # date_last_visit
+    'middleware.FilterIPMiddleware'
 
 ]
 
