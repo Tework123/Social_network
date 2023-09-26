@@ -104,7 +104,6 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-
         return Response(status=status.HTTP_200_OK, data='Ваш аккаунт активирован')
     else:
         return Response(status=status.HTTP_403_FORBIDDEN, data='Время жизни ссылки истекло')

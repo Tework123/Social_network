@@ -34,6 +34,7 @@ class AccountEditSerializer(serializers.ModelSerializer):
     #
     #     # if not attrs['date_of_birth']:
     #     #     attrs['date_of_birth'] = None
+
     #
     #     return attrs
 
