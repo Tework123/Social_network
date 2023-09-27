@@ -19,9 +19,9 @@ jobs:
       db:
         image: postgres:15.3
         env:
-          POSTGRES_DB: postgres
+          POSTGRES_DB: social_network
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ksflkOkas23fl9saflKdl349sLfsk1
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -42,6 +42,7 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: Social_network.settings.development
         POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
 
       run: |
         cd backend/Social_network/
