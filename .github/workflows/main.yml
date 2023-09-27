@@ -31,7 +31,7 @@ jobs:
         DJANGO_SETTINGS_MODULE: backend.Social_network.Social_network.settings.development
       run: |
         cd backend/Social_network/
-        python manage.py shell test
+        python manage.py test
 
 
       
