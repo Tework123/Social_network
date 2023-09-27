@@ -10,13 +10,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ksflkOkas23fl9saflKdl349sLfsk1
-      POSTGRES_HOST: db 
-      POSTGRES_DB: social_network
-      POSTGRES_PORT: 5432
       
     strategy:
       max-parallel: 4
@@ -47,13 +40,6 @@ jobs:
         cd backend/Social_network/
         pip install -r requirements.txt
     - name: Run Tests
-      env:
-        DJANGO_SETTINGS_MODULE: Social_network.settings.development
-        DB_USERNAME: postgres
-        DB_PASSWORD: ksflkOkas23fl9saflKdl349sLfsk1
-        DB_HOST: db
-        DB_DATABASE: social_network
-        DB_PORT: 5432
 
       run: |
         cd backend/Social_network/
