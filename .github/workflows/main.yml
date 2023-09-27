@@ -40,6 +40,7 @@ jobs:
         python -m pip install --upgrade pip
         cd backend/Social_network/
         pip install -r requirements.txt
+        pip install flake8
         
     - name: Check linters
       run: |
