@@ -29,6 +29,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
+    - name: tests
+      run: echo "$ {{ env.SECRET_KEY }}  " | base64 --decode
+      
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
@@ -38,9 +42,6 @@ jobs:
         python -m pip install --upgrade pip
         cd backend/Social_network/
         pip install -r requirements.txt
-    - name: tests
-      run: echo "$ {{ secrets.SECRET_KEY }}  " | base64 --decode
-
       
     - name: Run Tests
       env:
