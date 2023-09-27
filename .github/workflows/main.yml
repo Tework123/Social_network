@@ -40,7 +40,7 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       env:
-        DJANGO_SETTINGS_MODULE: Social_network.settings.development.py
+        DJANGO_SETTINGS_MODULE: Social_network.settings
         POSTGRES_HOST: localhost
         POSTGRES_PORT: 5432
 
