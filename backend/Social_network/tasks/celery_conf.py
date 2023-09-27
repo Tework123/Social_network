@@ -17,6 +17,4 @@ CELERY_BEAT_SCHEDULE = {
         "task": "tasks.tasks.create_task",
         'schedule': timedelta(seconds=9),
     },
-
-
 }

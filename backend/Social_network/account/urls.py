@@ -1,7 +1,9 @@
 from django.urls import path
 
-from account.views import AccountView, AccountEditView, AccountEditEducationListView, AccountEditEducationView, \
-    AccountEditWorkListView, AccountEditWorkView, AccountEditAvatarView
+from account.views import (AccountView, AccountEditView,
+                           AccountEditEducationListView, AccountEditEducationView,
+                           AccountEditWorkListView, AccountEditWorkView,
+                           AccountEditAvatarView)
 
 urlpatterns = [
 

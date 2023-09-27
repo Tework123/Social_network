@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-
 from album.models import Album, Photo
 
 

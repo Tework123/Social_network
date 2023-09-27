@@ -19,7 +19,6 @@ class AccountSerializer(serializers.ModelSerializer):
     education = EducationSerializer(many=True)
     work = WorkSerializer(many=True)
 
-
     class Meta:
         model = CustomUser
         fields = ['id', 'email', 'first_name', 'last_name',

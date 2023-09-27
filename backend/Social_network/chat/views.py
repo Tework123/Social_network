@@ -205,8 +205,8 @@ class RelationshipListView(generics.ListCreateAPIView):
         # нужна будет кнопка для создания отношения в профиле каждого человека,
         # с которым еще нет диалога, там уже подхватывается его id
         user_2 = request.data['user_2']
-        exist_relationship = Relationship.objects.filter(Q(user_1=user, user_2=user_2) |
-                                                         Q(user_2=user, user_1=user_2))
+        exist_relationship = Relationship.objects.filter(Q(user_1=user, user_2=user_2)
+                                                         | Q(user_2=user, user_1=user_2))
 
         if exist_relationship:
             return Response(status=status.HTTP_403_FORBIDDEN,

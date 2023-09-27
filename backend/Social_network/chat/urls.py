@@ -28,7 +28,8 @@ urlpatterns = [
     path('dialogs/<int:pk>/', RelationshipEditView.as_view()),
 
     # показ всех сообщений отношения, отправка сообщения в отношение(созданного уже)(pk отношения)
-    path('dialogs/messages/<int:pk>/', MessageRelationshipListView.as_view({'get': 'list', 'put': 'put'})),
+    path('dialogs/messages/<int:pk>/', MessageRelationshipListView.
+         as_view({'get': 'list', 'put': 'put'})),
 
     # mock сообщение для отношения(требуется pk отношения)
     path('dialogs/messages_mock/<int:pk>/', MessageCreateMockRelationshipView.as_view()),

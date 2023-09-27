@@ -1,7 +1,9 @@
-from django.urls import path, re_path
+from django.urls import path
 
-from login.views import CreateUserView, AuthUserView, activate, LogoutUserView, ResetPasswordSendEmail, \
-    ResetPasswordCreatePassword, RegisterUserTryView, DeleteUserView
+from login.views import (CreateUserView, AuthUserView, activate,
+                         LogoutUserView, ResetPasswordSendEmail,
+                         ResetPasswordCreatePassword, RegisterUserTryView,
+                         DeleteUserView)
 
 urlpatterns = [
 

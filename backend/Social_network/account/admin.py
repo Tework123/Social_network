@@ -1,16 +1,14 @@
-from django.contrib import admin
 from django.contrib.auth import get_user_model
-
 from account.models import Education, Work
 
-CustomUser = get_user_model()
 
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
+
+CustomUser = get_user_model()
 
 
 class UserCreationForm(forms.ModelForm):
@@ -73,12 +71,14 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ["email", "password", "is_active", "is_superuser", 'first_name', 'last_name',
+    list_display = ["email", "password", "is_active", "is_superuser", 'first_name',
+                    'last_name',
                     'phone', 'city', 'about_me', 'avatar',
                     'date_of_birth', 'lifestyle', 'interest']
     list_filter = ["is_superuser"]
     fieldsets = [
-        (None, {"fields": ["email", "password", "is_active", "is_superuser", 'first_name', 'last_name',
+        (None, {"fields": ["email", "password", "is_active", "is_superuser", 'first_name',
+                           'last_name',
                            'phone', 'city', 'about_me', 'avatar',
                            'date_of_birth', 'lifestyle', 'interest']}),
     ]

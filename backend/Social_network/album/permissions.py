@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from album.models import Photo, Album
+from album.models import Album
 
 
 class IsAlbumCreator(permissions.BasePermission):
