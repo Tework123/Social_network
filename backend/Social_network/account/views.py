@@ -34,6 +34,9 @@ class AccountEditView(generics.RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         serializer = AccountEditSerializer(data=request.data)
+        if request.data['date_of_birth'] == '':
+            request.data['date_of_birth'] = None
+
         serializer.is_valid(raise_exception=True)
 
         user = CustomUser.objects.filter(id=self.request.user.id)
