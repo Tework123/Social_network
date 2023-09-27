@@ -27,22 +27,30 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
-
     steps:
     - uses: actions/checkout@v3
+          
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+        
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         cd backend/Social_network/
         pip install -r requirements.txt
+        pip install flake8
+        
+    - name: Check linters
+      run: |
+        cd backend/Social_network/
+        python -m flake8
+        
     - name: Run Tests
       env:
         DJANGO_SETTINGS_MODULE: Social_network.settings.development
-
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
         cd backend/Social_network/
         python manage.py test
