@@ -76,7 +76,7 @@ class Command(BaseCommand):
                                          level='средний',
                                          user=user)
 
-            avatar_absolute_path = os.path.abspath(f"Social_network/media/photos/animal{i}.jpg")
+            avatar_absolute_path = os.path.abspath(f"Social_network/media/base_photos/animal{i}.jpg")
 
             # создаем альбом для фото профиля и фото профиля
             album_avatar = Album.objects.create(name='Фото профиля', user=user, avatar_album=True)
@@ -91,7 +91,7 @@ class Command(BaseCommand):
             for _ in range(2):
                 random_digit = random.randrange(1, 14)
                 album_photo_absolute_path = os.path.abspath(
-                    f"Social_network/media/photos/nature{random_digit}.jpg")
+                    f"Social_network/media/base_photos/nature{random_digit}.jpg")
 
                 with open(album_photo_absolute_path, 'rb') as new_image:
                     photo = SimpleUploadedFile(album_photo_absolute_path, new_image.read())
