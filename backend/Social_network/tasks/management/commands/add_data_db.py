@@ -39,6 +39,8 @@ class Command(BaseCommand):
         admin = CustomUser.objects.create_superuser(email='admin@mail.ru',
                                                     password='admin')
 
+        CustomUser.objects.create_superuser(email='admin1@mail.com', password='12345')
+
         # добавляем пользователей
         for i in range(1, 4):
             name = fake.name()
