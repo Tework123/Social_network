@@ -4,7 +4,7 @@ services:
 
 
   backend:
-    container_name: backend
+    container_name: backend2
     build: ./backend/Social_network
     command: >
       bash -c "python manage.py migrate
@@ -42,7 +42,7 @@ services:
 
 
   db:
-    container_name: db
+    container_name: db2
     image: postgres:15
     restart: unless-stopped
     volumes:
@@ -72,9 +72,9 @@ services:
 
   dashboard:
     build: ./backend/Social_network
-    command: celery flower -A tasks --port=5555 --broker=redis://redis:6379/0
+    command: celery flower -A tasks --port=5556 --broker=redis://redis:6379/0
     ports:
-      - 5555:5555
+      - '5556:5556'
     environment:
       - CELERY_BROKER=redis://redis:6379/0
       - CELERY_BACKEND=redis://redis:6379/0

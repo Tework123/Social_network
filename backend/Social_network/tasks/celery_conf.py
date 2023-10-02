@@ -7,6 +7,7 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 CELERY_IMPORTS = [
     # name django_app, name folder, name file
     'tasks.tasks',
+
 ]
 
 # # переписать на классах

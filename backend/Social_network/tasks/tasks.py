@@ -1,5 +1,6 @@
 import time
 
+import celery
 from celery import shared_task
 from celery.utils.log import logger
 
@@ -18,6 +19,15 @@ def create_task(task_type=1):
 
     time.sleep(task_type * 3)
     return True
+
+
+class TestTask(celery.Task):
+    def run(self, *args, **kwargs):
+        logger.info(args)
+        logger.info(kwargs)
+
+        logger.info("Я иду гулять соло")
+        time.sleep(3)
 
 #
 # @shared_task

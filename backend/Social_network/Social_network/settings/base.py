@@ -28,6 +28,9 @@ INSTALLED_APPS = [
     # swagger
     'drf_yasg',
 
+    # whitenoise
+    # 'whitenoise.runserver_nostatic',
+
     # apps
     'account.apps.AccountConfig',
     'album.apps.AlbumConfig',
@@ -59,7 +62,10 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 
     # date_last_visit
-    'middleware.FilterIPMiddleware'
+    'middleware.FilterIPMiddleware',
+
+    # whitenoise for static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 
 ]
 
@@ -191,6 +197,8 @@ TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 
 USE_TZ = True
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
