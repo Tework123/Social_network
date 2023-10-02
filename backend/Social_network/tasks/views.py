@@ -2,7 +2,7 @@ from celery.result import AsyncResult
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from tasks.tasks import create_task
+# from tasks.tasks import create_task
 
 
 # с отправкой на email
