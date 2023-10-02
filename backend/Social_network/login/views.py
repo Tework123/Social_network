@@ -1,6 +1,9 @@
+import os
+
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from dotenv import load_dotenv
 
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view
@@ -15,6 +18,10 @@ from login.serializers import CreateUserSerializer, AuthUserSerializer, \
 from django.contrib.auth import authenticate, login, logout
 
 from login.utils import account_activation_token
+from tasks.tasks import celery_send_to_email
+
+load_dotenv()
+env = os.environ.get('ENV')
 
 
 class CreateUserView(CreateAPIView):
@@ -33,9 +40,13 @@ class CreateUserView(CreateAPIView):
                                                   password=request.data['password'],
                                                   is_active=False)
 
-            # отправка на email
-            send_to_email(user, mail_subject='Ссылка для активации аккаунта',
-                          template_name='email_auth.html')
+            if env == 'production':
+                # отправка на email celery task
+                celery_send_to_email.delay(email=user.email, mail_subject='Ссылка для активации аккаунта',
+                                           template_name='email_auth.html')
+            else:
+                send_to_email(user, mail_subject='Ссылка для активации аккаунта',
+                              template_name='email_auth.html')
 
             return Response(status=status.HTTP_200_OK,
                             data='Для подтверждения аккаунта пройди по ссылке,'

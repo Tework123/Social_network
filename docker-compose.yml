@@ -59,6 +59,10 @@ services:
     command: celery --app=tasks worker --loglevel=INFO
     volumes:
       - ./backend/Social_network:/usr/src/app/
+
+    # для доступа к базе при отправке email
+    env_file:
+      - ./.env
     environment:
       - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
       - CELERY_BROKER=redis://redis:6379/0
@@ -69,6 +73,10 @@ services:
 
   redis:
     image: redis:7.2-alpine
+
+    # для доступа к базе при отправке email
+    env_file:
+      - ./.env
 
   dashboard:
     build: ./backend/Social_network

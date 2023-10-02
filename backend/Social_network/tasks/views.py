@@ -5,7 +5,6 @@ from django.views.decorators.csrf import csrf_exempt
 from tasks.tasks import create_task
 
 
-# надо переписать на классы, а то бред получается... как минимум один должен быть
 # с отправкой на email
 @csrf_exempt
 def run_task(request):
