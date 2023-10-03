@@ -36,16 +36,14 @@ class CreateUserView(CreateAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
         except:
 
-            # отправить в очередь запрос на создание юзера
             user = CustomUser.objects.create_user(email=request.data['email'],
                                                   password=request.data['password'],
                                                   is_active=False)
 
-            # сделать урл на выгрузку всех фото(10) профиля через очередь
-
             if env == 'production':
                 # отправка на email celery task
-                celery_send_to_email.delay(email=user.email, mail_subject='Ссылка для активации аккаунта',
+                celery_send_to_email.delay(email=user.email,
+                                           mail_subject='Ссылка для активации аккаунта',
                                            template_name='email_auth.html')
             else:
                 send_to_email(user, mail_subject='Ссылка для активации аккаунта',

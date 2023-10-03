@@ -4,6 +4,7 @@ from celery import shared_task
 from celery.utils.log import logger
 
 from login.email import send_to_email
+from post.models import Post
 
 
 @shared_task
@@ -19,8 +20,11 @@ def upload_photos():
 
 
 @shared_task
-def task_db():
-    logger.info(f"Пытаюсь создать юзера")
+def task_db(job_params):
+    logger.info(f"Пытаюсь изменить пост")
+    post = Post.objects.get(pk=job_params['id'])
+    post.text = 'i am win'
+    post.save()
     time.sleep(1)
 
 
