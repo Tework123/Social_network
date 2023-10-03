@@ -101,14 +101,13 @@ class Command(BaseCommand):
         self.stdout.write(self.style.HTTP_NOT_MODIFIED('Пользователи добавлены'))
         self.stdout.write(self.style.HTTP_NOT_MODIFIED('Альбомы добавлены'))
         self.stdout.write(self.style.HTTP_NOT_MODIFIED('Фото добавлены'))
-
         users = CustomUser.objects.all()
-        photos = Photo.objects.all()
 
         for _ in range(3):
             chat_name = fake.color_name() + ' чат'
             chat = Chat.objects.create(name=chat_name, open_or_close=True)
 
+            users = CustomUser.objects.all()
             # добавляем в чаты пользователей
             for user in users:
                 chat.user.add(user)
@@ -119,15 +118,19 @@ class Command(BaseCommand):
                                                      chat_id=chat.pk,
                                                      date_create=timezone.now(),
                                                      mock=False)
-                    digit = random.randrange(0, len(photos))
+                    photos = Photo.objects.all()
 
+                    digit = random.randrange(0, len(photos))
                     photos = random.choices(population=[photos[:digit], photos[digit], []],
-                                            weights=[0.1, 0.2, 0.7], k=1)
+                                            weights=[0.1, 0.3, 0.6], k=1)
 
                     # добавляем к этим сообщениям фото
                     if photos[0]:
-                        for photo in photos:
-                            message.photo.add(photo)
+                        if type(photos[0]) != list:
+                            message.photo.add(photos[0])
+                        else:
+                            for photo in photos[0]:
+                                message.photo.add(photo)
 
         self.stdout.write(self.style.HTTP_NOT_MODIFIED('Сообщения добавлены в чаты'))
 
@@ -140,10 +143,13 @@ class Command(BaseCommand):
                                     status='friend')
         # добавляем в диалог сообщения
         for _ in range(3):
+            users = CustomUser.objects.all()
+
             message = Message.objects.create(text=fake.text(),
                                              user=users[0],
                                              relationship_id=relationship.id,
                                              mock=False)
+            photos = Photo.objects.all()
 
             digit = random.randrange(0, len(photos))
 
@@ -152,8 +158,11 @@ class Command(BaseCommand):
 
             # добавляем к этим сообщениям фото
             if photos[0]:
-                for photo in photos:
-                    message.photo.add(photo)
+                if type(photos[0]) != list:
+                    message.photo.add(photos[0])
+                else:
+                    for photo in photos[0]:
+                        message.photo.add(photo)
 
         self.stdout.write(self.style.HTTP_NOT_MODIFIED('Диалоги добавлены'))
         self.stdout.write(self.style.HTTP_NOT_MODIFIED('Сообщения добавлены в диалоги'))
