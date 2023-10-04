@@ -1,5 +1,6 @@
 import time
 
+import requests
 from celery import shared_task
 from celery.utils.log import logger
 
@@ -19,13 +20,20 @@ def upload_photos():
     time.sleep(20)
 
 
+# @shared_task
+# def task_db(job_params):
+#     logger.info(f"Пытаюсь изменить пост")
+#     post = Post.objects.get(pk=job_params['id'])
+#     post.text = 'i am win'
+#     post.save()
+#     time.sleep(1)
+
 @shared_task
-def task_db(job_params):
-    logger.info(f"Пытаюсь изменить пост")
-    post = Post.objects.get(pk=job_params['id'])
-    post.text = 'i am win'
-    post.save()
-    time.sleep(1)
+def task_db(url):
+    logger.info("Делаю запрос на внешний апи")
+    r = requests.get(url=url)
+    time.sleep(10)
+    return r.json()
 
 
 @shared_task
