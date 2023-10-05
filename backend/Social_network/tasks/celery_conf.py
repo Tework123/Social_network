@@ -1,26 +1,15 @@
 import os
 from datetime import timedelta
 
-# if os.environ.get('ENV') == 'production':
+# redis
 # CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
-# CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+# result_backend = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 
-# CELERY_BROKER_URL = 'amqp://localhost'
-# CELERY_RESULT_BACKEND = 'amqp://localhost'
-
-# CELERY_BROKER_URL = 'amqp://myuser:mypassword@127.0.0.1:5672/myvhost'
+# rabbitmq
 CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
-
 result_backend = 'rpc://'
 
-# CELERY_RESULT_BACKEND = 'amqp://myuser:mypassword@localhost:5672/myvhost'
-
-# else:
-#     # BROKER_URL = 'redis://localhost:6379'
-#     CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://localhost:6379/")
-#     CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://localhost:6379/")
-
-# CELERY_ACCEPT_CONTENT = ['application/json']
+# accept_content = ['application/json']
 result_serializer = 'json'
 task_serializer = 'json'
 broker_connection_retry_on_startup = True

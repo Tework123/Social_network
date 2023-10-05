@@ -1,10 +1,7 @@
-import json
 import time
 
 import requests
-from celery.result import AsyncResult
 from django.db import transaction
-from django.http import HttpResponse
 from rest_framework import generics, status, views
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
@@ -101,7 +98,7 @@ class PostEditView(generics.RetrieveUpdateDestroyAPIView):
 class DigitalAPiView(views.APIView):
 
     # пытаемся оправить асинхронный запрос на внешний апи
-    # он даже без библиотеки не блокирует приложение
+    # он даже без библиотеки не блокирует приложение, ничего не понял, ну ладно
     def get(self, request):
         url = 'http://numbersapi.com/random/year?json'
         res = requests.get(url=url)
@@ -125,5 +122,4 @@ class RedisTestView(views.APIView):
         url = 'https://api.dictionaryapi.dev/api/v2/entries/en/fuck'
         res = test_task.delay(url)
         res = res.get()
-        print(res)
         return Response(status=status.HTTP_200_OK, data=res[0])

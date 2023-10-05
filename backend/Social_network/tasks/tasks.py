@@ -63,8 +63,3 @@ def test_task(url):
     r = requests.get(url=url)
     time.sleep(1)
     return r.json()
-
-# делаем один докер комопозе для redis
-# другой для rabbit
-# в редис надо убрать эти строки под каждым воркером енв
-# management к rabbit войти в консоль

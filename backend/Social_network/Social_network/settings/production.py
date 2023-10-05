@@ -8,6 +8,10 @@ DEBUG = True
 #     'rest_framework.renderers.JSONRenderer',
 # )
 
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 DATABASES = {
     'default': {
