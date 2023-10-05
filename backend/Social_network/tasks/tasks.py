@@ -58,8 +58,13 @@ def task_2(task_type=1):
 
 
 @shared_task
-def test_task(seconds):
+def test_task(url):
     logger.info("Поймал!")
+    r = requests.get(url=url)
+    time.sleep(1)
+    return r.json()
 
-    time.sleep(seconds)
-    return {'data': 'I am work'}
+# делаем один докер комопозе для redis
+# другой для rabbit
+# в редис надо убрать эти строки под каждым воркером енв
+# management к rabbit войти в консоль

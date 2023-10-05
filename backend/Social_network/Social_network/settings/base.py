@@ -31,9 +31,6 @@ INSTALLED_APPS = [
     # whitenoise
     # 'whitenoise.runserver_nostatic',
 
-    # async lib
-    'adrf',
-
     # apps
     'account.apps.AccountConfig',
     'album.apps.AlbumConfig',

@@ -122,6 +122,8 @@ class DigitalAPiView(views.APIView):
 class RedisTestView(views.APIView):
 
     def get(self, request):
-        res = test_task.delay(5)
-        return Response(status=status.HTTP_200_OK, data=res.json())
-
+        url = 'https://api.dictionaryapi.dev/api/v2/entries/en/fuck'
+        res = test_task.delay(url)
+        res = res.get()
+        print(res)
+        return Response(status=status.HTTP_200_OK, data=res[0])

@@ -54,10 +54,65 @@ services:
       - POSTGRES_DB=$NAME
 
 
-  celery_worker_for_db:
+  #  celery_worker_for_db:
+  #    build: ./backend/Social_network
+  #    #    command: celery --app=tasks worker --loglevel=INFO
+  #    command: celery --app=tasks worker -Q task_db --loglevel=INFO
+  #
+  #    volumes:
+  #      - ./backend/Social_network:/usr/src/app/
+  #
+  #    # для доступа к базе при отправке email
+  #    env_file:
+  #      - ./.env
+  #    environment:
+  #      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+  #      - CELERY_BROKER=redis://redis:6379/0
+  #      - CELERY_BACKEND=redis://redis:6379/0
+  #    depends_on:
+  #      - backend
+  #      - redis
+
+  #  celery_worker_photos:
+  #    build: ./backend/Social_network
+  #    #    command: celery --app=tasks worker --loglevel=INFO
+  #    command: celery --app=tasks worker -Q photos --loglevel=INFO
+  #
+  #    volumes:
+  #      - ./backend/Social_network:/usr/src/app/
+  #
+  #    # для доступа к базе при отправке email
+  #    env_file:
+  #      - ./.env
+  #    environment:
+  #      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+  #      - CELERY_BROKER=redis://redis:6379/0
+  #      - CELERY_BACKEND=redis://redis:6379/0
+  #    depends_on:
+  #      - backend
+  #      - redis
+
+  #  celery_worker_for_email:
+  #    build: ./backend/Social_network
+  #    command: celery --app=tasks worker -Q email --loglevel=INFO
+  #    volumes:
+  #      - ./backend/Social_network:/usr/src/app/
+  #
+  #    # для доступа к базе при отправке email
+  #    env_file:
+  #      - ./.env
+  #    environment:
+  #      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+  #      - CELERY_BROKER=redis://redis:6379/0
+  #      - CELERY_BACKEND=redis://redis:6379/0
+  #    depends_on:
+  #      - backend
+  #      - redis
+
+  celery_worker_test:
     build: ./backend/Social_network
     #    command: celery --app=tasks worker --loglevel=INFO
-    command: celery --app=tasks worker -Q task_db --loglevel=INFO
+    command: celery --app=tasks worker -Q test_task --loglevel=INFO
 
     volumes:
       - ./backend/Social_network:/usr/src/app/
@@ -71,43 +126,8 @@ services:
       - CELERY_BACKEND=redis://redis:6379/0
     depends_on:
       - backend
-      - redis
-
-  celery_worker_photos:
-    build: ./backend/Social_network
-    #    command: celery --app=tasks worker --loglevel=INFO
-    command: celery --app=tasks worker -Q photos --loglevel=INFO
-
-    volumes:
-      - ./backend/Social_network:/usr/src/app/
-
-    # для доступа к базе при отправке email
-    env_file:
-      - ./.env
-    environment:
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
-    depends_on:
-      - backend
-      - redis
-
-  celery_worker_for_email:
-    build: ./backend/Social_network
-    command: celery --app=tasks worker -Q email --loglevel=INFO
-    volumes:
-      - ./backend/Social_network:/usr/src/app/
-
-    # для доступа к базе при отправке email
-    env_file:
-      - ./.env
-    environment:
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
-    depends_on:
-      - backend
-      - redis
+      #      - redis
+      - rabbitmq
 
   celery_worker_task_1:
     build: ./backend/Social_network
@@ -118,13 +138,14 @@ services:
     # для доступа к базе при отправке email
     env_file:
       - ./.env
-    environment:
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
+#    environment:
+#      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+#      - CELERY_BROKER=redis://redis:6379/0
+#      - CELERY_BACKEND=redis://redis:6379/0
     depends_on:
       - backend
-      - redis
+      #      - redis
+      - rabbitmq
 
   celery_worker_task_2:
     build: ./backend/Social_network
@@ -135,36 +156,56 @@ services:
     # для доступа к базе при отправке email
     env_file:
       - ./.env
-    environment:
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
+#    environment:
+#      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+#      - CELERY_BROKER=redis://redis:6379/0
+#      - CELERY_BACKEND=redis://redis:6379/0
     depends_on:
       - backend
-      - redis
+      #      - redis
+      - rabbitmq
 
-  redis:
-    image: redis:7.2-alpine
+  #  redis:
+  #    image: redis:7.2-alpine
+  #
+  #    # для доступа к базе при отправке email
+  #    env_file:
+  #      - ./.env
 
-    # для доступа к базе при отправке email
-    env_file:
-      - ./.env
-
-  celery-flower:
-    build: ./backend/Social_network
-    command: celery flower -A tasks --port=5556 --broker=redis://redis:6379/0
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3-management-alpine
     ports:
-      - '5556:5556'
-    environment:
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
-    depends_on:
-      - backend
-      - redis
-      - celery_worker_for_email
-      - celery_worker_for_db
-      - celery_worker_task_1
-      - celery_worker_task_2
+      - '5672:5672'
+      - '15672:15672'
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=quest
+#      - RABBITMQ_DEFAULT_PASS=quest
+
+#  rabbitmq-management:
+#    image: rabbitmq:3.12-management
+#    #    ports:
+#    #      - "15671:15672"
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=admin
+#      - RABBITMQ_DEFAULT_PASS=admin
+
+
+  #  celery-flower:
+  #    build: ./backend/Social_network
+  #    command: celery flower -A tasks --port=5556 --broker=redis://redis:6379/0
+  #    ports:
+  #      - '5556:5556'
+  #    environment:
+  #      - CELERY_BROKER=redis://redis:6379/0
+  #      - CELERY_BACKEND=redis://redis:6379/0
+  #    depends_on:
+  #      - backend
+  #      - redis
+  ##      - celery_worker_for_email
+  ##      - celery_worker_for_db
+  #      - celery_worker_task_1
+  #      - celery_worker_task_2
 
   celery-beat:
     build: ./backend/Social_network
@@ -175,8 +216,8 @@ services:
     #      - DEBUG=1
     #      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
     depends_on:
-      - redis
-
+      #      - redis
+      - rabbitmq
 volumes:
   postgres_data:
   static_value:
