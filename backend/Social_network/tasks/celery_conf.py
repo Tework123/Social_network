@@ -18,6 +18,7 @@ CELERY_TASK_ROUTES = {
     # test
     'tasks.tasks.task_1': {'queue': 'task_1', },
     'tasks.tasks.task_2': {'queue': 'task_2', },
+    'tasks.tasks.test_task': {'queue': 'test_task', },
 
     'tasks.tasks.upload_photos': {'queue': 'photos', },
     'tasks.tasks.task_db': {'queue': 'task_db', },
