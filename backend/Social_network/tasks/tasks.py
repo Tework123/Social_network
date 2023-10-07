@@ -1,9 +1,7 @@
 import time
-
 import requests
 from celery import shared_task
 from celery.utils.log import logger
-
 from login.email import send_to_email
 from post.models import Post
 

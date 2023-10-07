@@ -3,9 +3,18 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from rest_framework.generics import get_object_or_404
-
 from account.models import CustomUser
-from login.utils import account_activation_token
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+import six
+
+
+class TokenGenerator(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (six.text_type(user.pk) + six.text_type(timestamp)
+                + six.text_type(user.is_active))
+
+
+account_activation_token = TokenGenerator()
 
 
 def send_to_email(email, mail_subject, template_name):

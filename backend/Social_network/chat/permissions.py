@@ -36,8 +36,8 @@ class IsRelationshipUser(permissions.BasePermission):
 class IsMessageCreator(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        message = Message.objects.filter(pk=view.kwargs['pk'], user=request.user)
-        if message:
+        message = get_object_or_404(Message, pk=view.kwargs['pk'])
+        if message.user == request.user:
             return True
         return False
 
