@@ -28,7 +28,7 @@ class RegisterView(CreateAPIView):
         try:
             CustomUser.objects.get(email=request.data['email'])
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
-        except Exception as e:
+        except:
 
             user = serializer.save()
 

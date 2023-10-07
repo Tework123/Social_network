@@ -1,4 +1,4 @@
-from rest_framework import serializers, exceptions
+from rest_framework import serializers
 from chat.models import Chat, Relationship, Message
 
 

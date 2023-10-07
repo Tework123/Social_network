@@ -7,7 +7,8 @@ from album.permissions import IsAlbumCreator
 from album.serializers import (
     AlbumPOSTSerializer, AlbumRetrieveGETSerializer,
     PhotoPOSTSerializer,
-    PhotoRetrievePATCHSerializer, PhotoRetrieveGETSerializer, AlbumListGETSerializer, PhotoListGETSerializer)
+    PhotoRetrievePATCHSerializer, PhotoRetrieveGETSerializer,
+    AlbumListGETSerializer, PhotoListGETSerializer)
 
 
 class AlbumListView(generics.ListCreateAPIView):

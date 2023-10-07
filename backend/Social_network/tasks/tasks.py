@@ -14,13 +14,13 @@ def celery_send_to_email(email, mail_subject, template_name):
 
 @shared_task
 def upload_photos():
-    logger.info(f"Грузим фоточки по тихому")
+    logger.info("Грузим фоточки по тихому")
     time.sleep(20)
 
 
 @shared_task
 def task_db(job_params):
-    logger.info(f"Пытаюсь изменить пост")
+    logger.info("Пытаюсь изменить пост")
     post = Post.objects.get(pk=job_params['id'])
     post.text = 'i am win'
     post.save()

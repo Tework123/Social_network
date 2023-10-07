@@ -1,7 +1,5 @@
-import datetime
 import os
 import random
-from django.contrib.auth.models import User, Permission, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import BaseCommand
 from django.utils import timezone
@@ -36,8 +34,8 @@ class Command(BaseCommand):
         # count_users_answers = kwargs['count_users_answers']
 
         # добавляем админа
-        admin = CustomUser.objects.create_superuser(email='admin@mail.ru',
-                                                    password='admin')
+        CustomUser.objects.create_superuser(email='admin@mail.ru',
+                                            password='admin')
 
         CustomUser.objects.create_superuser(email='admin1@mail.com', password='12345')
 
@@ -59,9 +57,10 @@ class Command(BaseCommand):
                                                   city=city,
                                                   about_me=job,
 
-                                                  # avatar=SimpleUploadedFile(avatar_absolute_path, new_image.read()),
-                                                  date_of_birth=timezone.now()
-                                                                - relativedelta(years=35),
+                                                  # avatar=SimpleUploadedFile
+                                                  # (avatar_absolute_path, new_image.read()),
+                                                  date_of_birth=(timezone.now()
+                                                                 - relativedelta(years=35)),
                                                   interest=fake.text()
                                                   )
             # дополнить поля
@@ -76,10 +75,13 @@ class Command(BaseCommand):
                                          level='средний',
                                          user=user)
 
-            avatar_absolute_path = os.path.abspath(f"Social_network/media/base_photos/animal{i}.jpg")
+            avatar_absolute_path = (os.path.
+                                    abspath(f"Social_network/media/base_photos/animal{i}.jpg"))
 
             # создаем альбом для фото профиля и фото профиля
-            album_avatar = Album.objects.create(name='Фото профиля', user=user, avatar_album=True)
+            album_avatar = Album.objects.create(name='Фото профиля',
+                                                user=user, avatar_album=True)
+
             with open(avatar_absolute_path, 'rb') as new_image:
                 photo = SimpleUploadedFile(avatar_absolute_path, new_image.read())
                 avatar = Photo.objects.create(image=photo, text=fake.text(), user=user)
@@ -126,7 +128,7 @@ class Command(BaseCommand):
 
                     # добавляем к этим сообщениям фото
                     if photos[0]:
-                        if type(photos[0]) != list:
+                        if type(photos[0]) is not list:
                             message.photo.add(photos[0])
                         else:
                             for photo in photos[0]:
@@ -158,7 +160,7 @@ class Command(BaseCommand):
 
             # добавляем к этим сообщениям фото
             if photos[0]:
-                if type(photos[0]) != list:
+                if type(photos[0]) is not list:
                     message.photo.add(photos[0])
                 else:
                     for photo in photos[0]:

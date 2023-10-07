@@ -1,4 +1,4 @@
-from rest_framework import status, generics, exceptions
+from rest_framework import status, generics
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -56,7 +56,7 @@ class CustomUserEditAvatarView(generics.CreateAPIView):
 
         try:
             avatar_album = Album.objects.get(user=user[0], avatar_album=True)
-        except Exception as e:
+        except:
             avatar_album = Album.objects.create(name='Фото профиля', avatar_album=True,
                                                 user=user[0])
 
