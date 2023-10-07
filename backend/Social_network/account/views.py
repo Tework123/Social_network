@@ -15,6 +15,8 @@ class AccountView(generics.RetrieveAPIView):
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticated]
 
+    # здесь куча разных самописных методов, пусть будут в отдельном релизе
+
     # не могу вытащить relationship, потому что там user_1, а не user
     # альбомы будет сложно подцепить, да и нужно ли это
     # надо подцепить посты и группы
