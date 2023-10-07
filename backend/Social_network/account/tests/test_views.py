@@ -41,16 +41,16 @@ class AccountViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_account_edit(self):
-        response = self.client.put('/api/v1/account/edit/',
-                                   data={'first_name': '',
-                                         'last_name': '',
-                                         'phone': '',
-                                         'city': '',
-                                         'about_me': '',
-                                         'lifestyle': '',
-                                         'interest': '',
-                                         'date_of_birth': datetime.date.today()},
-                                   content_type="application/json")
+        response = self.client.patch('/api/v1/account/edit/',
+                                     data={'first_name': '',
+                                           'last_name': '',
+                                           'phone': '',
+                                           'city': '',
+                                           'about_me': '',
+                                           'lifestyle': '',
+                                           'interest': '',
+                                           'date_of_birth': datetime.date.today()},
+                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Информация успешно изменена')
@@ -82,14 +82,14 @@ class AccountViewTest(TestCase):
         self.assertEqual(response.data, 'Место работы успешно добавлено')
 
     def test_account_work_edit(self):
-        response = self.client.put('/api/v1/account/edit/work/1/',
-                                   data={'name': 'traktorist',
-                                         'city': 'Moscow',
-                                         'status': '',
-                                         'date_start': datetime.date.today(),
-                                         'date_stop': datetime.date.today(),
-                                         'user': self.get_user().id},
-                                   content_type="application/json")
+        response = self.client.patch('/api/v1/account/edit/work/1/',
+                                     data={'name': 'traktorist',
+                                           'city': 'Moscow',
+                                           'status': '',
+                                           'date_start': datetime.date.today(),
+                                           'date_stop': datetime.date.today(),
+                                           'user': self.get_user().id},
+                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Информация успешно изменена')
@@ -124,14 +124,14 @@ class AccountViewTest(TestCase):
         self.assertEqual(response.data, 'Место обучения успешно добавлено')
 
     def test_account_education_edit(self):
-        response = self.client.put('/api/v1/account/edit/education/1/',
-                                   data={'name': 'school',
-                                         'city': 'Moscow',
-                                         'status': '',
-                                         'level': '',
-                                         'date_graduation': datetime.date.today(),
-                                         'user': self.get_user().id},
-                                   content_type="application/json")
+        response = self.client.patch('/api/v1/account/edit/education/1/',
+                                     data={'name': 'school',
+                                           'city': 'Moscow',
+                                           'status': '',
+                                           'level': '',
+                                           'date_graduation': datetime.date.today(),
+                                           'user': self.get_user().id},
+                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Информация успешно изменена')

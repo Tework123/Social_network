@@ -1,10 +1,12 @@
 from django.urls import path
 
-from tasks.views import run_task, get_status
+from tasks.views import CreatePostView, PostEditView, DigitalAPiView, RedisTestView
 
 urlpatterns = [
 
-    path("", run_task, name="run_task"),
-    path("<task_id>/", get_status, name="get_status"),
+    path('', CreatePostView.as_view()),
+    path('<int:pk>', PostEditView.as_view()),
+    path('number/', DigitalAPiView.as_view()),
+    path('test/', RedisTestView.as_view()),
 
 ]

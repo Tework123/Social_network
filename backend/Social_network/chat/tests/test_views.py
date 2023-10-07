@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from chat.models import Chat, Message, Relationship
 
 fake = Faker()
-absolute_path = os.path.abspath("Social_network/media/photos/shrek.jpg")
+absolute_path = os.path.abspath("Social_network/media/base_photos/shrek.jpg")
 
 
 class ChatViewTest(TestCase):
@@ -121,11 +121,11 @@ class ChatViewTest(TestCase):
 
     def test_chat_edit(self):
 
-        response = self.client.put('/api/v1/chat/1/',
-                                   data={'name': 'my_chat1',
-                                         'open_or_close': False,
-                                         'user': list(self.get_users_id()[1:3])},
-                                   content_type="application/json")
+        response = self.client.patch('/api/v1/chat/1/',
+                                     data={'name': 'my_chat1',
+                                           'open_or_close': False,
+                                           'user': list(self.get_users_id()[1:3])},
+                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Беседа успешно изменена')
@@ -202,10 +202,10 @@ class ChatViewTest(TestCase):
         self.assertEqual(len(response.data), 2)
 
     def test_dialog_edit(self):
-        response = self.client.put('/api/v1/chat/dialogs/1/',
-                                   data={'status': 'enemy'
-                                         },
-                                   content_type="application/json")
+        response = self.client.patch('/api/v1/chat/dialogs/1/',
+                                     data={'status': 'enemy'
+                                           },
+                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Отношения с пользователем изменены')
@@ -233,7 +233,6 @@ class ChatViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # прикрепляем к нему фото
-
         response = self.client.put('/api/v1/chat/dialogs/messages_mock/1/',
                                    data={'photo': list(self.get_photos())},
                                    content_type="application/json")
@@ -255,10 +254,10 @@ class ChatViewTest(TestCase):
     # messages
     def test_message(self):
 
-        response = self.client.put('/api/v1/chat/message/1/',
-                                   data={'text': fake.text(),
-                                         'photo': list(self.get_photos())},
-                                   content_type="application/json")
+        response = self.client.patch('/api/v1/chat/message/1/',
+                                     data={'text': fake.text(),
+                                           'photo': list(self.get_photos())},
+                                     content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Сообщение изменено')
 

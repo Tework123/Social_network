@@ -12,9 +12,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
-    email = models.EmailField(max_length=40, unique=True)
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
+    email = models.EmailField(max_length=100, unique=True)
+    first_name = models.CharField(max_length=50, blank=True)
+    last_name = models.CharField(max_length=50, blank=True)
     phone = PhoneNumberField(unique=False, null=True, blank=True)
     city = models.CharField(max_length=50, blank=True)
     about_me = models.TextField(max_length=150, blank=True)
@@ -33,10 +33,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Education(models.Model):
-    name = models.CharField(max_length=50, blank=False)
-    city = models.CharField(max_length=30, blank=True)
-    level = models.CharField(max_length=30, blank=True)
-    status = models.CharField(max_length=30, blank=True)
+    name = models.CharField(max_length=100, blank=False)
+    city = models.CharField(max_length=50, blank=True)
+    level = models.CharField(max_length=50, blank=True)
+    status = models.CharField(max_length=50, blank=True)
 
     # для одного года проще создать еще одно поле,
     # туда записать цифру года, а это оставить? choice написать для выбора года,
@@ -49,9 +49,9 @@ class Education(models.Model):
 
 
 class Work(models.Model):
-    name = models.CharField(max_length=50, blank=False)
-    city = models.CharField(max_length=30, blank=True)
-    status = models.CharField(max_length=30, blank=True)
+    name = models.CharField(max_length=100, blank=False)
+    city = models.CharField(max_length=50, blank=True)
+    status = models.CharField(max_length=50, blank=True)
     date_start = models.DateField(null=True, blank=True)
     date_stop = models.DateField(null=True, blank=True)
     user = models.ForeignKey(CustomUser, related_name='work', on_delete=models.CASCADE)

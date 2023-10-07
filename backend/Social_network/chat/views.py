@@ -7,78 +7,56 @@ from rest_framework.response import Response
 
 from chat.models import Chat, Relationship, Message
 from chat.permissions import IsChatUser, IsMessageCreator, IsRelationshipUser
-from chat.serializers import (ChatListSerializer, ChatEditSerializer,
-                              RelationshipListSerializer,
-                              RelationshipEditSerializer, MessageChatListSerializer,
-                              MessageChatCreateSerializer, MessageChatEditSerializer,
-                              MessageMockChatSerializer, RelationshipCreateSerializer)
+from chat.serializers import (
+    RelationshipListSerializer,
+    MessageChatListSerializer,
+    MessageChatCreateSerializer,
+    MessageMockChatSerializer, RelationshipCreateSerializer, ChatListGETSerializer,
+    ChatPOSTSerializer, ChatRetrievePATCHSerializer, ChatRetrieveGETSerializer,
+    MessageRetrieveSerializer, RelationshipRetrieveSerializer)
 
 
 class ChatListView(generics.ListCreateAPIView):
     """Показывает все чаты пользователя с первым сообщением каждого чата, создает чат"""
-    serializer_class = ChatListSerializer
     permission_classes = [IsAuthenticated]
 
-    # def get_serializer_context(self):
-    #     print(5)
-    #     return {
-    #         'request': self.request
-    #     }
-
-    # def get_serializer(self, *args, **kwargs):
-    #     print(4)
-    #     serializer_class = self.get_serializer_class()
-    #     kwargs['context'] = self.get_serializer_context()
-    #     return serializer_class(*args, **kwargs)
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return ChatListGETSerializer
+        else:
+            return ChatPOSTSerializer
 
     def get_queryset(self):
         return Chat.objects.filter(user=self.request.user).prefetch_related('user')
 
     def post(self, request, *args, **kwargs):
-        # print(1)
+
         # чтобы создатель автоматически добавлялся в чат
-        serializer = ChatListSerializer(data=request.data, context={'user': self.request.user})
-        serializer.validate(request.data)
+        serializer = ChatPOSTSerializer(data=request.data, context={'user': self.request.user})
         serializer.is_valid(raise_exception=True)
-
-        # print(3)
-        chat = Chat.objects.create(name=request.data['name'], open_or_close=True)
-
-        users = request.data['user']
-        users.insert(0, self.request.user.id)
-        for user in users:
-            chat.user.add(user)
-
+        serializer.save()
         return Response(status=status.HTTP_201_CREATED, data='Беседа создана успешно')
 
 
-class ChatEditView(generics.RetrieveUpdateDestroyAPIView):
+class ChatRetrieveView(generics.RetrieveUpdateDestroyAPIView):
     """Показывает один чат, изменяет, удаляет его(требуется id чата)"""
-    serializer_class = ChatEditSerializer
     permission_classes = [IsAuthenticated, IsChatUser]
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return ChatRetrieveGETSerializer
+        else:
+            return ChatRetrievePATCHSerializer
 
     def get_object(self):
         return get_object_or_404(Chat.objects.prefetch_related('user'), pk=self.kwargs['pk'])
 
-    # потом наверное немного по другому придется удалять и добавлять пользователей в беседу
-    def put(self, request, *args, **kwargs):
-        serializer = ChatEditSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        chat = Chat.objects.filter(pk=self.kwargs['pk'])
-
-        chat.update(name=request.data['name'])
-
-        # удаляем все прикрепленные many_to_many objects
-        chat[0].user.clear()
-
-        users = request.data['user']
-        for user in users:
-            chat[0].user.add(user)
-
+    def patch(self, request, *args, **kwargs):
+        self.partial_update(request, *args, **kwargs)
         return Response(status=status.HTTP_200_OK, data='Беседа успешно изменена')
 
     def delete(self, request, *args, **kwargs):
-        Chat.objects.get(pk=self.kwargs['pk']).delete()
+        self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_200_OK, data='Беседа успешно удалена')
 
 
@@ -99,6 +77,8 @@ class MessageChatListView(viewsets.ModelViewSet):
 
     # здесь нужен put для обновления поля mock = False
     def put(self, request, *args, **kwargs):
+        self.partial_update(request, *args, **kwargs)
+
         serializer = MessageChatCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -145,40 +125,6 @@ class MessageCreateMockChatView(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_200_OK, data='Фото добавлены к сообщению')
 
 
-class MessageChatEditView(generics.RetrieveUpdateDestroyAPIView):
-    """Показывает, изменяет, удаляет одно сообщение(требуется id сообщения)"""
-    permission_classes = [IsAuthenticated, IsMessageCreator]
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return MessageChatListSerializer
-        else:
-            return MessageChatEditSerializer
-
-    def get_object(self):
-        return get_object_or_404(Message.objects.prefetch_related('photo'),
-                                 pk=self.kwargs['pk'])
-
-    def put(self, request, *args, **kwargs):
-        serializer = MessageChatEditSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        message = Message.objects.filter(pk=self.kwargs['pk'])
-
-        photos = request.data['photo']
-
-        message[0].photo.clear()
-        for photo in photos:
-            message[0].photo.add(photo)
-
-        message.update(text=request.data['text'], date_change=timezone.now())
-        return Response(status=status.HTTP_200_OK, data='Сообщение изменено')
-
-    def delete(self, request, *args, **kwargs):
-        Message.objects.get(pk=self.kwargs['pk']).delete()
-        return Response(status=status.HTTP_200_OK, data='Сообщение удалено')
-
-
 # Relationship
 class RelationshipListView(generics.ListCreateAPIView):
     """Показывает все отношения, создает отношения"""
@@ -200,10 +146,8 @@ class RelationshipListView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = RelationshipCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = self.request.user
 
-        # нужна будет кнопка для создания отношения в профиле каждого человека,
-        # с которым еще нет диалога, там уже подхватывается его id
+        user = self.request.user
         user_2 = request.data['user_2']
         exist_relationship = Relationship.objects.filter(Q(user_1=user, user_2=user_2)
                                                          | Q(user_2=user, user_1=user_2))
@@ -212,37 +156,28 @@ class RelationshipListView(generics.ListCreateAPIView):
             return Response(status=status.HTTP_403_FORBIDDEN,
                             data='Этот пользователь уже связан с тобой')
 
-        Relationship.objects.create(user_1=user,
-                                    user_2_id=user_2,
-                                    status=request.data['status'])
+        serializer.save(user_1=user)
 
         return Response(status=status.HTTP_201_CREATED,
                         data='Отношения с пользователем установлены')
 
 
-class RelationshipEditView(generics.RetrieveUpdateDestroyAPIView):
+class RelationshipRetrieveView(generics.RetrieveUpdateDestroyAPIView):
     """Показывает один диалог, изменяет, удаляет его(требуется id диалога)"""
 
-    serializer_class = RelationshipEditSerializer
+    serializer_class = RelationshipRetrieveSerializer
     permission_classes = [IsAuthenticated, IsRelationshipUser]
 
     def get_object(self):
         return get_object_or_404(Relationship.objects.
                                  select_related('user_1', 'user_2'), pk=self.kwargs['pk'])
 
-    def put(self, request, *args, **kwargs):
-        serializer = RelationshipEditSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        relationship = Relationship.objects.filter(pk=self.kwargs['pk'])
-        relationship.update(status=request.data['status'])
+    def patch(self, request, *args, **kwargs):
+        self.partial_update(request, *args, **kwargs)
         return Response(status=status.HTTP_200_OK, data='Отношения с пользователем изменены')
 
-    # что такое черный список? Это отношения, но если удалить из друзей, то отношений нет
-    # при этом в черном списке человек должен оставаться
-    # это будет особое отношение, в друзьях показываться не будет, писать не сможет
     def delete(self, request, *args, **kwargs):
-        Relationship.objects.get(pk=self.kwargs['pk']).delete()
+        self.destroy(request, *args, **kwargs)
         return Response(status=status.HTTP_200_OK, data='Отношения успешно удалены')
 
 
@@ -308,3 +243,29 @@ class MessageCreateMockRelationshipView(generics.RetrieveUpdateDestroyAPIView):
             mock_message.photo.add(photo)
 
         return Response(status=status.HTTP_200_OK, data='Фото добавлены к сообщению')
+
+
+class MessageRetrieveView(generics.RetrieveUpdateDestroyAPIView):
+    """Показывает, изменяет, удаляет одно сообщение(требуется id сообщения)"""
+    permission_classes = [IsAuthenticated, IsMessageCreator]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return MessageChatListSerializer
+        else:
+            return MessageRetrieveSerializer
+
+    def get_object(self):
+        return get_object_or_404(Message.objects.prefetch_related('photo'),
+                                 pk=self.kwargs['pk'])
+
+    def perform_update(self, serializer):
+        serializer.save(date_change=timezone.now())
+
+    def patch(self, request, *args, **kwargs):
+        self.partial_update(request, *args, **kwargs)
+        return Response(status=status.HTTP_200_OK, data='Сообщение изменено')
+
+    def delete(self, request, *args, **kwargs):
+        self.destroy(request, *args, **kwargs)
+        return Response(status=status.HTTP_200_OK, data='Сообщение удалено')

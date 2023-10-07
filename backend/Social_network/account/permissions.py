@@ -6,36 +6,12 @@ class IsCreator(permissions.BasePermission):
 
     def has_permission(self, request, view):
 
-        # if request.method == 'GET':
-        #     return True
-
-        # education = Education.objects.filter(user=request.user)
-        # if education:
-        #     return True
-
-        # user = request.user
-        # quiz = Quiz.objects.get(slug=request.resolver_match.kwargs["slug"])
-        # for group in quiz.group.all():
-        #     if user.groups.filter(name=group.name).exists():
-        #         return True
-
-        # стандартная проверка
         if request.user.is_authenticated:
             return True
 
     def has_object_permission(self, request, view, obj):
 
-        # более избирательные проверки
-        # if request.user.is_superuser:
-        #     return True
-        #
-        # if request.method in permissions.SAFE_METHODS:
-        #     return True
-
         if obj.user == request.user:
             return True
-
-        # if request.user.is_staff and request.method not in self.edit_methods:
-        #     return True
 
         return False

@@ -6,7 +6,7 @@ from album.models import Photo
 class Chat(models.Model):
     name = models.CharField(max_length=50)
     open_or_close = models.BooleanField(default=False)
-    user = models.ManyToManyField(CustomUser)
+    user = models.ManyToManyField(CustomUser, blank=True)
 
     # нужен создатель чата, он по умолчанию администратор
     # надо many_to_many для администратора, чтобы можно было

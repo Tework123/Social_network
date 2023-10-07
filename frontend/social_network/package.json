@@ -19,10 +19,11 @@
     "react-router-dom": "^5.3.4",
     "react-scripts": "5.0.1",
     "sass": "^1.66.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.3.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "HOST=127.0.0.1 react-scripts start",
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject"

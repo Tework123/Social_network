@@ -7,7 +7,7 @@ from album.models import Album, Photo
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 fake = Faker()
-absolute_path = os.path.abspath("Social_network/media/photos/shrek.jpg")
+absolute_path = os.path.abspath("Social_network/media/base_photos/shrek.jpg")
 
 
 class AlbumViewTest(TestCase):
@@ -61,10 +61,10 @@ class AlbumViewTest(TestCase):
         self.assertEqual(response.data, 'Альбом успешно добавлен')
 
     def test_album_edit(self):
-        response = self.client.put('/api/v1/album/1/',
-                                   data={'name': 'help_album'
-                                         },
-                                   content_type="application/json")
+        response = self.client.patch('/api/v1/album/1/',
+                                     data={'name': 'help_album'
+                                           },
+                                     content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Альбом успешно изменен')
@@ -119,10 +119,10 @@ class AlbumViewTest(TestCase):
 
     def test_photo_edit(self):
 
-        response = self.client.put('/api/v1/album/photo/1/',
-                                   data={
-                                       'text': '',
-                                   }, content_type="application/json")
+        response = self.client.patch('/api/v1/album/photo/1/',
+                                     data={
+                                         'text': '',
+                                     }, content_type="application/json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, 'Фото изменено успешно')

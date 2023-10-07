@@ -1,27 +1,28 @@
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from login.email import send_to_email
+from login.utils import send_email_env
 from account.models import CustomUser
-from login.serializers import CreateUserSerializer, AuthUserSerializer, \
-    ResetPasswordSendEmailSerializer, ResetPasswordCreatePasswordSerializer
+from login.serializers import (ResetPasswordCreatePasswordSerializer,
+                               RegisterSerializer, RegisterTrySerializer,
+                               AuthSerializer)
 from django.contrib.auth import authenticate, login, logout
 
-from login.utils import account_activation_token
+from login.email import account_activation_token
+from login.utils import create_test_user
 
 
-class CreateUserView(CreateAPIView):
-    serializer_class = CreateUserSerializer
+class RegisterView(CreateAPIView):
+    serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = CreateUserSerializer(data=request.data)
+        serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         try:
@@ -29,59 +30,56 @@ class CreateUserView(CreateAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Этот email уже занят')
         except:
 
-            user = CustomUser.objects.create_user(email=request.data['email'],
-                                                  password=request.data['password'],
-                                                  is_active=False)
+            user = serializer.save()
 
-            # отправка на email
-            send_to_email(user, mail_subject='Ссылка для активации аккаунта',
-                          template_name='email_auth.html')
+            send_email_env(email=user.email,
+                           mail_subject='Ссылка для активации аккаунта',
+                           template_name='email_auth.html')
 
             return Response(status=status.HTTP_200_OK,
                             data='Для подтверждения аккаунта пройди по ссылке,'
                                  ' которая отправлена вам на почту')
 
 
-class RegisterUserTryView(CreateAPIView):
-    serializer_class = ResetPasswordSendEmailSerializer
+class RegisterTryView(CreateAPIView):
+    serializer_class = RegisterTrySerializer
 
     def post(self, request, *args, **kwargs):
+        serializer = RegisterTrySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = get_object_or_404(CustomUser, email=request.data['email'])
         if user.is_active:
             return Response(status=status.HTTP_400_BAD_REQUEST, data='Ваш аккаунт уже подтвержден')
 
-        # отправка на email
-        send_to_email(user, mail_subject='Ссылка для активации аккаунта',
-                      template_name='email_auth.html')
+        send_email_env(email=user.email,
+                       mail_subject='Ссылка для активации аккаунта',
+                       template_name='email_auth.html')
 
         return Response(status=status.HTTP_200_OK,
                         data='Для подтверждения аккаунта пройди по ссылке,'
                              ' которая отправлена вам на почту')
 
 
-class AuthUserView(CreateAPIView):
-    serializer_class = AuthUserSerializer
+class AuthView(CreateAPIView):
+    serializer_class = AuthSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = AuthUserSerializer(data=request.data)
+        serializer = AuthSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        if request.data['email'] == 'user@mail.ru' and request.data['password'] == 'user@mail.ru':
-            try:
-                user = CustomUser.objects.get(email=request.data['email'])
-            except:
-                user = CustomUser.objects.create_user(email=self.request.data['email'],
-                                                      password=self.request.data['password'],
-                                                      is_active=True)
-            user = authenticate(email=user.email,
-                                password=request.data['password'])
-            login(request, user)
+        email = request.data['email']
+        password = request.data['password']
+
+        if email == 'user@mail.ru' and password == 'user@mail.ru':
+            create_test_user(email, password, request)
 
             return Response(status=status.HTTP_200_OK,
                             data='Авторизация тестового юзера прошла успешно')
-        user = get_object_or_404(CustomUser, email=request.data['email'])
 
-        user = authenticate(email=user.email, password=request.data['password'])
+        user = get_object_or_404(CustomUser, email=email)
+
+        user = authenticate(email=user.email, password=password)
 
         if user is None:
             return Response(status=status.HTTP_403_FORBIDDEN,
@@ -109,22 +107,25 @@ def activate(request, uidb64, token):
         return Response(status=status.HTTP_403_FORBIDDEN, data='Время жизни ссылки истекло')
 
 
-class ResetPasswordSendEmail(CreateAPIView):
-    serializer_class = ResetPasswordSendEmailSerializer
+class ResetPasswordSendEmailView(CreateAPIView):
+    serializer_class = RegisterTrySerializer
 
     def post(self, request, *args, **kwargs):
+        serializer = RegisterTrySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = get_object_or_404(CustomUser, email=request.data['email'])
 
-        # отправка на email
-        send_to_email(user, mail_subject='Ссылка для сброса пароля',
-                      template_name='email_reset_password.html')
+        send_email_env(email=user.email,
+                       mail_subject='Ссылка для сброса пароля',
+                       template_name='email_reset_password.html')
 
         return Response(status=status.HTTP_200_OK,
                         data='Для сброса пароля пройдите по ссылке,'
                              ' которая отправлена вам на почту')
 
 
-class ResetPasswordCreatePassword(APIView):
+class ResetPasswordCreatePasswordView(APIView):
 
     def get(self, request, uidb64, token):
 

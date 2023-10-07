@@ -6,7 +6,7 @@ from community.models import Community
 
 
 class Photo(models.Model):
-    image = models.ImageField(upload_to='photos/')
+    image = models.ImageField(upload_to='')
     text = models.TextField(max_length=150, blank=True)
     date_create = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(CustomUser, on_delete=models.PROTECT)

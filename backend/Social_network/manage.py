@@ -6,7 +6,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 def main():
-    # load_dotenv(os.path.join(basedir, '.env'))
     load_dotenv()
     env = os.environ.get('ENV')
 

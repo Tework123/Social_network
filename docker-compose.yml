@@ -4,7 +4,7 @@ services:
 
 
   backend:
-    container_name: backend
+    container_name: backend2
     build: ./backend/Social_network
     command: >
       bash -c "python manage.py migrate
@@ -14,17 +14,16 @@ services:
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
+
+    # close, open maybe swagger in nginx
     ports:
       - '8000:8000'
     env_file:
       - ./.env
     environment:
       - ENV=$ENV_PROD
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-    #      - CELERY_BROKER=redis://redis:6379/0
-    #      - CELERY_BACKEND=redis://redis:6379/0
     depends_on:
-      #      - redis
+      - rabbitmq
       - db
 
   frontend:
@@ -40,13 +39,12 @@ services:
     depends_on:
       - backend
 
-
   db:
-    container_name: db
+    container_name: db2
     image: postgres:15
     restart: unless-stopped
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/
     env_file:
       - ./.env
     environment:
@@ -54,46 +52,85 @@ services:
       - POSTGRES_DB=$NAME
 
 
-  celery:
+  celery_worker_for_db:
     build: ./backend/Social_network
-    command: celery --app=tasks worker --loglevel=INFO
+    command: celery --app=tasks worker -Q task_db --loglevel=INFO
+
     volumes:
       - ./backend/Social_network:/usr/src/app/
-    environment:
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
+
+    # для доступа к базе при отправке email
+    env_file:
+      - ./.env
     depends_on:
       - backend
-      - redis
 
-  redis:
-    image: redis:7.2-alpine
 
-  dashboard:
+  celery_worker_for_email:
     build: ./backend/Social_network
-    command: celery flower -A tasks --port=5555 --broker=redis://redis:6379/0
-    ports:
-      - 5555:5555
-    environment:
-      - CELERY_BROKER=redis://redis:6379/0
-      - CELERY_BACKEND=redis://redis:6379/0
+    command: celery --app=tasks worker -Q email --loglevel=INFO
+    volumes:
+      - ./backend/Social_network:/usr/src/app/
+    env_file:
+      - ./.env
     depends_on:
       - backend
-      - redis
-      - celery
+      - rabbitmq
+
+  celery_worker_test:
+    build: ./backend/Social_network
+    command: celery --app=tasks worker -Q test_task --loglevel=INFO
+    volumes:
+      - ./backend/Social_network:/usr/src/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - backend
+      - rabbitmq
+
+  celery_worker_task_1:
+    build: ./backend/Social_network
+    command: celery --app=tasks worker -Q task_1 --loglevel=INFO
+    volumes:
+      - ./backend/Social_network:/usr/src/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - backend
+      - rabbitmq
+
+  celery_worker_task_2:
+    build: ./backend/Social_network
+    command: celery --app=tasks worker -Q task_2 --loglevel=INFO
+    volumes:
+      - ./backend/Social_network:/usr/src/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - backend
+      - rabbitmq
+
+
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3.12-management-alpine
+    restart: always
+
+    # close
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+
 
   celery-beat:
     build: ./backend/Social_network
     command: celery -A tasks beat --loglevel=INFO
     volumes:
       - ./project/:/usr/src/app/
-#    environment:
-#      - DEBUG=1
-#      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
     depends_on:
-      - redis
-
+      - rabbitmq
 volumes:
   postgres_data:
   static_value:
