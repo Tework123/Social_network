@@ -11,7 +11,9 @@ class AlbumListGETSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ['id', 'name', 'photo']
+        fields = ['id',
+                  'name',
+                  'photo']
 
 
 class AlbumPOSTSerializer(serializers.ModelSerializer):
@@ -23,25 +25,32 @@ class AlbumPOSTSerializer(serializers.ModelSerializer):
 class AlbumRetrieveGETSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
-        fields = ['id', 'name']
+        fields = ['id',
+                  'name']
 
 
 class PhotoListGETSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['id', 'image', 'text', 'date_create']
+        fields = ['id',
+                  'image',
+                  'text',
+                  'date_create']
 
 
 class PhotoPOSTSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['image', 'text']
+        fields = ['image',
+                  'text']
 
 
 class PhotoRetrieveGETSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = ['id', 'image', 'text']
+        fields = ['id',
+                  'image',
+                  'text']
 
 
 class PhotoRetrievePATCHSerializer(serializers.ModelSerializer):

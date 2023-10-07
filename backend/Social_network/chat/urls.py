@@ -1,10 +1,10 @@
 from django.urls import path
 
-from chat.views import (ChatListView, ChatEditView, RelationshipListView,
-                        RelationshipEditView, MessageChatListView,
-                        MessageChatEditView, MessageCreateMockChatView,
+from chat.views import (ChatListView, ChatRetrieveView, RelationshipListView,
+                        MessageChatListView,
+                        MessageRetrieveView, MessageCreateMockChatView,
                         MessageRelationshipListView,
-                        MessageCreateMockRelationshipView)
+                        MessageCreateMockRelationshipView, RelationshipRetrieveView)
 
 urlpatterns = [
     # чаты
@@ -12,7 +12,7 @@ urlpatterns = [
     path('', ChatListView.as_view()),
 
     # изменяет чат по pk
-    path('<int:pk>/', ChatEditView.as_view()),
+    path('<int:pk>/', ChatRetrieveView.as_view()),
 
     # показ всех сообщений чата, отправка сообщения в чат(созданного уже)(pk чата)
     path('messages/<int:pk>/', MessageChatListView.as_view({'get': 'list', 'put': 'put'})),
@@ -25,7 +25,7 @@ urlpatterns = [
     path('dialogs/', RelationshipListView.as_view()),
 
     # изменяет диалог по pk
-    path('dialogs/<int:pk>/', RelationshipEditView.as_view()),
+    path('dialogs/<int:pk>/', RelationshipRetrieveView.as_view()),
 
     # показ всех сообщений отношения, отправка сообщения в отношение(созданного уже)(pk отношения)
     path('dialogs/messages/<int:pk>/', MessageRelationshipListView.
@@ -36,5 +36,5 @@ urlpatterns = [
 
     # general
     # изменение сообщения(pk сообщения)
-    path('message/<int:pk>/', MessageChatEditView.as_view()),
+    path('message/<int:pk>/', MessageRetrieveView.as_view()),
 ]
