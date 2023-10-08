@@ -21,7 +21,7 @@
 - db(postgres)
 - pgbackups
 - certbot
-- redis(celery, cash)
+- rabbitmq(celery, cash)
 
 ## Функциональность сайта:
 
@@ -44,10 +44,6 @@ Also:
 https://documenter.getpostman.com/view/25883857/2s946k6B7S
 
 ![image](https://github.com/Tework123/Bakery/assets/115368408/08d2515f-d409-42e5-b2bc-2e6837c54434)
-
-## Макеты страниц:
-
-ссылка на гугл диск с фоточками
 
 ## Установка:
 
@@ -114,7 +110,7 @@ tests:
 
     python -m flake8
 
-    test coverage:
+test coverage:
 
     coverage run manage.py test
     python -m coverage report

@@ -5,7 +5,7 @@ services:
 
   backend:
     container_name: backend2
-    build: ./backend/Social_network
+    build: ../backend/Social_network
     command: >
       bash -c "python manage.py migrate
       && python manage.py collectstatic
@@ -17,16 +17,16 @@ services:
     ports:
       - '8000:8000'
     env_file:
-      - ./.env
+      - ../.env
     environment:
       - ENV=$ENV_PROD
     depends_on:
-      - rabbitmq
+      - redis
       - db
 
   frontend:
     container_name: frontend
-    build: ./
+    build: ..
     restart: unless-stopped
     volumes:
       - ./deployment/nginx/nginx.default.conf:/etc/nginx/conf.d/default.conf
@@ -37,96 +37,118 @@ services:
     depends_on:
       - backend
 
+
   db:
     container_name: db2
     image: postgres:15
     restart: unless-stopped
     volumes:
-      - postgres_data:/var/lib/postgresql/
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - ../.env
     environment:
       - POSTGRES_PASSWORD=$PASSWORD
       - POSTGRES_DB=$NAME
 
 
   celery_worker_for_db:
-    build: ./backend/Social_network
+    build: ../backend/Social_network
     command: celery --app=tasks worker -Q task_db --loglevel=INFO
-
     volumes:
       - ./backend/Social_network:/usr/src/app/
 
-    # для доступа к базе при отправке email
+      # для доступа к базе при отправке email
     env_file:
-      - ./.env
+      - ../.env
     depends_on:
       - backend
+      - redis
 
+  celery_worker_photos:
+    build: ../backend/Social_network
+    command: celery --app=tasks worker -Q photos --loglevel=INFO
+    volumes:
+      - ./backend/Social_network:/usr/src/app/
+    env_file:
+      - ../.env
+    depends_on:
+      - backend
+      - redis
 
   celery_worker_for_email:
-    build: ./backend/Social_network
+    build: ../backend/Social_network
     command: celery --app=tasks worker -Q email --loglevel=INFO
     volumes:
       - ./backend/Social_network:/usr/src/app/
     env_file:
-      - ./.env
+      - ../.env
     depends_on:
       - backend
-      - rabbitmq
+      - redis
 
   celery_worker_test:
-    build: ./backend/Social_network
+    build: ../backend/Social_network
     command: celery --app=tasks worker -Q test_task --loglevel=INFO
     volumes:
       - ./backend/Social_network:/usr/src/app/
     env_file:
-      - ./.env
+      - ../.env
     depends_on:
       - backend
-      - rabbitmq
+      - redis
 
   celery_worker_task_1:
-    build: ./backend/Social_network
+    build: ../backend/Social_network
     command: celery --app=tasks worker -Q task_1 --loglevel=INFO
     volumes:
       - ./backend/Social_network:/usr/src/app/
     env_file:
-      - ./.env
+      - ../.env
     depends_on:
       - backend
-      - rabbitmq
+      - redis
 
   celery_worker_task_2:
-    build: ./backend/Social_network
+    build: ../backend/Social_network
     command: celery --app=tasks worker -Q task_2 --loglevel=INFO
     volumes:
       - ./backend/Social_network:/usr/src/app/
     env_file:
-      - ./.env
+      - ../.env
     depends_on:
       - backend
-      - rabbitmq
+      - redis
 
+  redis:
+    image: redis:7.2-alpine
 
-  rabbitmq:
-    container_name: "rabbitmq"
-    image: rabbitmq:3.12-management-alpine
-    restart: always
+    # для доступа к базе при отправке email
+    env_file:
+      - ../.env
+
+  celery-flower:
+    build: ../backend/Social_network
+    command: celery flower -A tasks --port=5556 --broker=redis://redis:6379/0
     ports:
-      - '5672:5672'
-      - '15672:15672'
-    volumes:
-      - ./rabbitmq:/var/lib/rabbitmq
-
+      - '5556:5556'
+    environment:
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - backend
+      - redis
+      - celery_worker_for_email
+      - celery_worker_for_db
+      - celery_worker_task_1
+      - celery_worker_task_2
 
   celery-beat:
-    build: ./backend/Social_network
+    build: ../backend/Social_network
     command: celery -A tasks beat --loglevel=INFO
     volumes:
       - ./project/:/usr/src/app/
     depends_on:
-      - rabbitmq
+      - redis
 volumes:
   postgres_data:
   static_value:
