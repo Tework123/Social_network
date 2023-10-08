@@ -1,12 +1,12 @@
 from .base import *
 
-# ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1', '0.0.0.0', 'backend']
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [ '45.141.76.71', 'localhost', '127.0.0.1', '0.0.0.0', 'backend']
+# ALLOWED_HOSTS = ["*"]
 DEBUG = False
 
-# REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
-#     'rest_framework.renderers.JSONRenderer',
-# )
+REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
+    'rest_framework.renderers.JSONRenderer',
+)
 
 # CSRF_COOKIE_HTTPONLY = False
 # SESSION_COOKIE_HTTPONLY = False
