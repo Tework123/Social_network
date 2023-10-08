@@ -1,6 +1,6 @@
 from .base import *
 
-ALLOWED_HOSTS = [ '45.141.76.71', 'localhost', '127.0.0.1', '0.0.0.0', 'backend']
+ALLOWED_HOSTS = ['45.141.76.71', 'localhost', '127.0.0.1', 'tework123.store']
 # ALLOWED_HOSTS = ["*"]
 DEBUG = False
 
