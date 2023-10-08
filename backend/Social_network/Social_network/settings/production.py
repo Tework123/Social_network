@@ -1,6 +1,9 @@
 from .base import *
 
-ALLOWED_HOSTS = ['45.141.76.71', 'localhost', '127.0.0.1', 'tework123.store']
+ALLOWED_HOSTS = ['45.141.76.71', 'localhost', '127.0.0.1',
+                 'http://tework123.store', 'https://tework123.store']
+CSRF_TRUSTED_ORIGINS = ['http://tework123.store', 'https://tework123.store']
+
 DEBUG = False
 
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
