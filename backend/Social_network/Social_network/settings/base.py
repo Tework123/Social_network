@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # whitenoise
-    # 'whitenoise.runserver_nostatic',
+    'whitenoise.runserver_nostatic',
 
     # apps
     'account.apps.AccountConfig',
@@ -47,6 +47,9 @@ AUTH_USER_MODEL = 'account.CustomUser'
 
 
 MIDDLEWARE = [
+    # cors
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,9 +60,6 @@ MIDDLEWARE = [
 
     # debug panel
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-
-    # cors
-    'corsheaders.middleware.CorsMiddleware',
 
     # date_last_visit
     'middleware.FilterIPMiddleware',
@@ -120,8 +120,8 @@ REST_FRAMEWORK = {
     #     'rest_framework.renderers.JSONRenderer',
     # ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+
     ],
 
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -131,41 +131,31 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+
 ]
+
+# должно было быть для nginx swagger, но и без этого работает
+# USE_X_FORWARDED_HOST = True
+
+# maybe for swagger nginx https
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+
+
 CSRF_TRUSTED_ORIGINS = ['http://localhost:3000',
-                        'http://127.0.0.1:3000', ]
+                        'http://127.0.0.1:3000',
+                        ]
 
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
+# or this:
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     'http://localhost:3030',
+# ]
+
+# for cookies
 CORS_ALLOW_CREDENTIALS = True
-# CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken', "Set-Cookie"]
 
-
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
-# SWAGGER_SETTINGS = {
-#     "DEFAULT_MODEL_RENDERING": "example"
-# }
-
-# SWAGGER_SETTINGS = {
-#     'DEFAULT_FIELD_INSPECTORS': [
-#         'drf_yasg.inspectors.CamelCaseJSONFilter',
-#         'drf_yasg.inspectors.InlineSerializerInspector',
-#         'drf_yasg.inspectors.RelatedFieldInspector',
-#         'drf_yasg.inspectors.ChoiceFieldInspector',
-#         'drf_yasg.inspectors.FileFieldInspector',
-#         'drf_yasg.inspectors.DictFieldInspector',
-#         'drf_yasg.inspectors.SimpleFieldInspector',
-#         'drf_yasg.inspectors.StringDefaultFieldInspector',
-#     ],
-# }
+# done mistake in console
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 # # cookies
 # CSRF_COOKIE_HTTPONLY = True
@@ -173,16 +163,6 @@ CORS_ALLOW_METHODS = [
 #
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 180
-
-##
-# CSRF_COOKIE_SAMESITE = 'Lax'
-# SESSION_COOKIE_SAMESITE = 'Lax'
-# CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
-# SESSION_COOKIE_HTTPONLY = True
-
-# PROD ONLY
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
 
 INTERNAL_IPS = [
     # ...
@@ -201,7 +181,11 @@ USE_TZ = True
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# whitenoise best
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/new_photos')

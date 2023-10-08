@@ -1,5 +1,6 @@
 amqp==5.1.1
 asgiref==3.7.2
+async-property==0.2.2
 billiard==4.1.0
 celery==5.3.4
 certifi==2023.7.22
@@ -42,7 +43,7 @@ python-dateutil==2.8.2
 python-dotenv==1.0.0
 pytz==2023.3
 PyYAML==6.0.1
-redis==5.0.0
+redis==5.0.1
 requests==2.31.0
 six==1.16.0
 sqlparse==0.4.4
