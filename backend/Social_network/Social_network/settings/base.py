@@ -138,7 +138,7 @@ CORS_ALLOWED_ORIGINS = [
 # USE_X_FORWARDED_HOST = True
 
 # maybe for swagger nginx https
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
 
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:3000',
@@ -154,7 +154,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # for cookies
 CORS_ALLOW_CREDENTIALS = True
 
-# done mistake in console
+    # done mistake in console
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 # # cookies
