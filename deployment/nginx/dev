@@ -3,8 +3,12 @@ upstream Social_network {
 }
 
 server {
-
+    server_name tework123.store;
     listen 80;
+
+     location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
 
     location / {
         # swagger on 80 don`t work without them:
@@ -21,5 +25,4 @@ server {
     location ^/media/ {
         alias /app/media/;
     }
-
 }
