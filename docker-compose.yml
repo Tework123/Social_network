@@ -102,27 +102,27 @@ services:
   #      - backend
   #      - rabbitmq
   #
-  celery_worker_task_1:
-    build: ./backend/Social_network
-    command: celery --app=tasks worker -Q task_1 --loglevel=INFO
-    volumes:
-      - ./backend/Social_network:/usr/src/app/
-    env_file:
-      - ./.env
-    depends_on:
-      - backend
-      - rabbitmq
-
-  celery_worker_task_2:
-    build: ./backend/Social_network
-    command: celery --app=tasks worker -Q task_2 --loglevel=INFO
-    volumes:
-      - ./backend/Social_network:/usr/src/app/
-    env_file:
-      - ./.env
-    depends_on:
-      - backend
-      - rabbitmq
+#  celery_worker_task_1:
+#    build: ./backend/Social_network
+#    command: celery --app=tasks worker -Q task_1 --loglevel=INFO
+#    volumes:
+#      - ./backend/Social_network:/usr/src/app/
+#    env_file:
+#      - ./.env
+#    depends_on:
+#      - backend
+#      - rabbitmq
+#
+#  celery_worker_task_2:
+#    build: ./backend/Social_network
+#    command: celery --app=tasks worker -Q task_2 --loglevel=INFO
+#    volumes:
+#      - ./backend/Social_network:/usr/src/app/
+#    env_file:
+#      - ./.env
+#    depends_on:
+#      - backend
+#      - rabbitmq
 
 
   rabbitmq:
@@ -138,13 +138,13 @@ services:
       - ./rabbitmq:/var/lib/rabbitmq
 
 
-  celery-beat:
-    build: ./backend/Social_network
-    command: celery -A tasks beat --loglevel=INFO
-    volumes:
-      - ./project/:/usr/src/app/
-    depends_on:
-      - rabbitmq
+#  celery-beat:
+#    build: ./backend/Social_network
+#    command: celery -A tasks beat --loglevel=INFO
+#    volumes:
+#      - ./project/:/usr/src/app/
+#    depends_on:
+#      - rabbitmq
 volumes:
   postgres_data:
   static_value:
