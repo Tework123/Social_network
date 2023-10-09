@@ -1,3 +1,5 @@
+import os
+
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
@@ -20,12 +22,18 @@ account_activation_token = TokenGenerator()
 def send_to_email(email, mail_subject, template_name):
     user = get_object_or_404(CustomUser, email=email)
 
+    env = os.environ.get('ENV')
+    if env == 'production':
+        link = 'https'
+        domain = 'tework123.store'
+    else:
+        link = 'http'
+        domain = '127.0.0.1:8000'
+
     message = render_to_string(template_name, {
         'user': user,
-
-        # нужно сделать domain меняющимся, сервер или локальная машина
-        # в темплайте надо будет еще изменить http на https
-        'domain': '127.0.0.1:3000',
+        'link': link,
+        'domain': domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
     })

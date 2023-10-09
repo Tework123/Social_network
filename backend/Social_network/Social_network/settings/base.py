@@ -194,13 +194,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/new_photos')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # sentry
-if os.environ.get('ENV') == 'production':
+env = os.environ.get('ENV')
+if env == 'production':
     environment = "production",
 else:
     environment = ''
 
 sentry_sdk.init(
-    dsn="https://2543d6c5f1e96587e2ab049b87d6b73a@o4505633113112576.ingest.sentry.io/4506018116993024",
+    dsn="https://2543d6c5f1e96587e2ab049b87d6b73a@o4505633113112576."
+        "ingest.sentry.io/4506018116993024",
     traces_sample_rate=1.0,
     environment=environment,
     profiles_sample_rate=1.0,

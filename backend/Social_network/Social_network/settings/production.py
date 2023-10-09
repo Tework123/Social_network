@@ -1,10 +1,10 @@
 from .base import *
 
-ALLOWED_HOSTS = ['45.141.76.71', 'localhost', '127.0.0.1', 'tework123.store']
+ALLOWED_HOSTS = ['45.141.76.71', 'localhost', '127.0.0.1', '0.0.0.0', 'tework123.store']
 
 CSRF_TRUSTED_ORIGINS = ['https://tework123.store']
 
-DEBUG = False
+DEBUG = True
 
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
     'rest_framework.renderers.JSONRenderer',

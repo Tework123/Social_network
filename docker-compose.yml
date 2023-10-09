@@ -13,10 +13,6 @@ services:
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
-
-    # close, open maybe swagger in nginx
-    #    ports:
-    #      - '8000:8000'
     env_file:
       - ./.env
     environment:
@@ -87,6 +83,10 @@ services:
         - ./backend/Social_network:/usr/src/app/
       env_file:
         - ./.env
+
+      # for change address app
+      environment:
+        - ENV=$ENV_PROD
       depends_on:
         - backend
         - rabbitmq
@@ -131,9 +131,9 @@ services:
     restart: always
 
     # close
-    ports:
-      - '5672:5672'
-      - '15672:15672'
+#    ports:
+#      - '5672:5672'
+#      - '15672:15672'
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
 
