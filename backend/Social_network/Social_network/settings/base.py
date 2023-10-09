@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import sentry_sdk
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -141,7 +142,6 @@ CORS_ALLOWED_ORIGINS = [
 # don`t work https swagger without them
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
 
-
 CSRF_TRUSTED_ORIGINS = ['http://localhost:3000',
                         'http://127.0.0.1:3000',
                         ]
@@ -192,7 +192,20 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/new_photos')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-#
+
+# sentry
+if os.environ.get('ENV') == 'production':
+    environment = "production",
+else:
+    environment = ''
+
+sentry_sdk.init(
+    dsn="https://2543d6c5f1e96587e2ab049b87d6b73a@o4505633113112576.ingest.sentry.io/4506018116993024",
+    traces_sample_rate=1.0,
+    environment=environment,
+    profiles_sample_rate=1.0,
+)
+
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': True,

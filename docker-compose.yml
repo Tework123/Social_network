@@ -80,16 +80,16 @@ services:
   #      - backend
 
 
-  #  celery_worker_for_email:
-  #    build: ./backend/Social_network
-  #    command: celery --app=tasks worker -Q email --loglevel=INFO
-  #    volumes:
-  #      - ./backend/Social_network:/usr/src/app/
-  #    env_file:
-  #      - ./.env
-  #    depends_on:
-  #      - backend
-  #      - rabbitmq
+  celery_worker_for_email:
+      build: ./backend/Social_network
+      command: celery --app=tasks worker -Q email --loglevel=INFO
+      volumes:
+        - ./backend/Social_network:/usr/src/app/
+      env_file:
+        - ./.env
+      depends_on:
+        - backend
+        - rabbitmq
 
   #  celery_worker_test:
   #    build: ./backend/Social_network
@@ -131,9 +131,9 @@ services:
     restart: always
 
     # close
-    ports:
-      - '5672:5672'
-      - '15672:15672'
+#    ports:
+#      - '5672:5672'
+#      - '15672:15672'
     volumes:
       - ./rabbitmq:/var/lib/rabbitmq
 
