@@ -1,5 +1,11 @@
 # Social_network
 
+Ссылка на сайт:
+https://tework123.store/
+
+Ссылка на гитхаб:
+https://github.com/Tework123/Social_network/
+
 ## Использованные технологии:
 
 ### Frontend(писал DenisFrol7):
