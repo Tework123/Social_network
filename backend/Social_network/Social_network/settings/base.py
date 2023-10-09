@@ -1,6 +1,8 @@
+import logging
 import os
 from pathlib import Path
 import sentry_sdk
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

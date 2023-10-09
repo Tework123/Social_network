@@ -1,3 +1,4 @@
+import logging
 import time
 import requests
 from celery import shared_task
@@ -10,6 +11,7 @@ from post.models import Post
 def celery_send_to_email(email, mail_subject, template_name):
     send_to_email(email, mail_subject, template_name)
     logger.info(f"Отправил сообщение на email: {email}")
+    return True
 
 
 @shared_task
