@@ -6,33 +6,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
 
-    # rest
+EXTRA_APPS = [
     'rest_framework',
-
-    # debug panel
     "debug_toolbar",
-
-    # library for phone_field
     "phonenumber_field",
-
-    # cors
     'corsheaders',
-
-    # swagger
     'drf_yasg',
-
-    # whitenoise
     'whitenoise.runserver_nostatic',
+]
 
-    # apps
+SOCIAL_NETWORK_APPS = [
     'account.apps.AccountConfig',
     'album.apps.AlbumConfig',
     'chat.apps.ChatConfig',
@@ -40,6 +32,12 @@ INSTALLED_APPS = [
     'login.apps.LoginConfig',
     'post.apps.PostConfig',
     'tasks.apps.TasksConfig'
+]
+
+INSTALLED_APPS = [
+    *DJANGO_APPS,
+    *EXTRA_APPS,
+    *SOCIAL_NETWORK_APPS,
 ]
 AUTH_USER_MODEL = 'account.CustomUser'
 

@@ -6,19 +6,23 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1/login/', include('login.urls')),
-    path('api/v1/account/', include('account.urls')),
-    path('api/v1/album/', include('album.urls')),
-    path('api/v1/chat/', include('chat.urls')),
-    path('api/v1/community/', include('community.urls')),
-    path('api/v1/post/', include('post.urls')),
+v1_urls = [
+    path('login/', include('login.api.v1.urls')),
+    path('account/', include('account.api.v1.urls')),
+    path('album/', include('album.api.v1.urls')),
+    path('chat/', include('chat.api.v1.urls')),
+    path('community/', include('community.api.v1.urls')),
+    path('post/', include('post.api.v1.urls')),
 
     # celery
-    path('api/v1/tasks/', include('tasks.urls')),
+    path('tasks/', include('tasks.api.v1.urls')),
 
+]
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
+    path("v1/", include((v1_urls, "v1"), namespace="v1")),
 
 ]
 
