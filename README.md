@@ -1,5 +1,11 @@
 # Social_network
 
+Ссылка на сайт:
+https://tework123.store/
+
+Ссылка на гитхаб:
+https://github.com/Tework123/Social_network/
+
 ## Использованные технологии:
 
 ### Frontend(писал DenisFrol7):
@@ -34,16 +40,11 @@
 Also:
 
 - unittest api
+- flake8
 
 ## Схема базы данных:
+![Social_network (1)](https://github.com/Tework123/Social_network/assets/115368408/9dab964e-b816-4b90-a017-9803723ebe48)
 
-![image](https://github.com/Tework123/Bakery/assets/115368408/1b9c6443-78dc-4302-adc7-824a72329320)
-
-## Документация open-api(swagger):
-
-https://documenter.getpostman.com/view/25883857/2s946k6B7S
-
-![image](https://github.com/Tework123/Bakery/assets/115368408/08d2515f-d409-42e5-b2bc-2e6837c54434)
 
 ## Установка:
 
