@@ -43,7 +43,7 @@ Also:
 - flake8
 
 ## Схема базы данных:
-![Social_network (1)](https://github.com/Tework123/Social_network/assets/115368408/9dab964e-b816-4b90-a017-9803723ebe48)
+![Social_network](https://github.com/Tework123/Social_network/assets/115368408/80a71e6a-9aad-4761-9870-e5660a674ecc)
 
 
 ## Установка:
