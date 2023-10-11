@@ -78,17 +78,17 @@ class LoginViewTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Ссылка для активации аккаунта')
 
-    # def test_reset_password(self):
-    #     response = self.client.post('/v1/login/reset_password/',
-    #                                 data={'email': 'user1@mail.ru'},
-    #                                 content_type="application/json")
-    #
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.data, 'Для сброса пароля пройдите по ссылке,'
-    #                                     ' которая отправлена вам на почту')
-    #
-    #     self.assertEqual(len(mail.outbox), 1)
-    #     self.assertEqual(mail.outbox[0].subject, 'Ссылка для сброса пароля')
+    def test_reset_password(self):
+        response = self.client.post('/v1/login/reset_password/',
+                                    data={'email': 'user1@mail.ru'},
+                                    content_type="application/json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, 'Для сброса пароля пройдите по ссылке,'
+                                        ' которая отправлена вам на почту')
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Ссылка для сброса пароля')
 
     def test_logout(self):
         # авторизация перед выходом
